@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="js/etc.js"></script>
+    <script src="js/cards.js"></script>
+    <script src="js/jspsych-6_1_0/jspsych.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/card-game-plugin.js"></script>
+    <link href="js/jspsych-6_1_0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body></body>
+  <script>
+    var timeline = [];
+
+    var test_card_game = {
+      type: "card_game"
+    };
+    timeline.push(test_card_game);
+
+    jsPsych.init({
+      timeline: timeline
+    });
+  </script>
+</html>
