@@ -380,20 +380,20 @@ jsPsych.plugins["card_game"] = (function() {
         }, frame_time);
     }
 
-    var left_card_loc = 160;
-    var right_card_loc = 300;
-    var card_width = 140;
-    var card_offset = 260;
-    var card_height = 200;
+    var bet_locs = [100, 170, 240];
+    var bet_width = 60;
+    var bet_offset = 275;
+    var bet_height = 80;
 
-    //TODO? some basic geometry
-    function card_contains(card_loc,x,y) { //Returns whether (x,y) on the canvas is 'within' the card
-      if (card_loc == 0) {
-        curr_card_loc = left_card_loc;
-      } else {
-        curr_card_loc = right_card_loc;
+    function bet_contains(x,y) { //Returns whether (x,y) on the canvas is 'within' one of the bets, else false 
+      for (var bet_i = 0; bet_i < 3; bet_i ++) {
+        curr_bet_loc = bet_locs[bet_i]
+        if (x >= curr_bet_loc && x <= curr_bet_loc + bet_width && y >= bet_offset && y <= bet_offset + bet_height) {
+         alert(bet_i);
+         return bet_i; 
+        }
       }
-      return x >= curr_card_loc && x <= curr_card_loc + card_width && y >= card_offset && y <= card_offset + card_height;
+      return false;
     }
 
     // For event handlers
@@ -427,6 +427,11 @@ jsPsych.plugins["card_game"] = (function() {
             my = e.pageY - offsetY;
             return {x: mx, y: my};
     };
+
+    canvas.addEventListener('mousedown', function(e) {
+      var mouse = getMouse(e, canvas);
+      var bet_is = bet_contains(mouse.x, mouse.y)
+    });
 
 
     draw_current_cards(0, 3);
