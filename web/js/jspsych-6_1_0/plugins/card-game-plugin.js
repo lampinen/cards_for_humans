@@ -21,6 +21,10 @@ jsPsych.plugins["card_game"] = (function() {
         type: jsPsych.plugins.parameterType.BOOL,
         default: false
       },
+      my_hand: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: "" 
+      },
       canvas_height: {
         type: jsPsych.plugins.parameterType.INT,
         default: 400 
@@ -92,6 +96,9 @@ jsPsych.plugins["card_game"] = (function() {
       var cc_r = 0.1*scale; //card corner radius
 
       var flip_scale_x = Math.cos(azimuth_angle);
+      var flip_shift = 0.5 * c_width * (1 - Math.abs(Math.cos(azimuth_angle)));
+      var flip_text_shift = 0.2 * c_width * Math.sin(azimuth_angle);
+
       var front = flip_scale_x >= 0;
       if (!front) {
         flip_scale_x = -flip_scale_x;
@@ -107,6 +114,7 @@ jsPsych.plugins["card_game"] = (function() {
 
       draw.translate(x, y);
       draw.rotate(angle);
+      draw.translate(flip_shift, 0);
 
 
       if (front) {
@@ -143,7 +151,11 @@ jsPsych.plugins["card_game"] = (function() {
         }
         draw.textAlign = "center";
         draw.font = (0.9 * scale) + "px Arial";
+        draw.translate(flip_text_shift, 0);
+        draw.scale(flip_scale_x, 1);
         draw.fillText(card_number.toString(), s_off_x, s_off_y);
+        draw.scale(1/flip_scale_x, 1);
+        draw.translate(-flip_text_shift, 0);
       } else {
         draw.beginPath();
         draw.ellipse( cc_rx, offset_y + cc_ry, cc_rx, cc_ry, 0, -pi, -pi_2);
@@ -160,6 +172,7 @@ jsPsych.plugins["card_game"] = (function() {
         draw.stroke();
       }
 
+      draw.translate(-flip_shift, 0);
       draw.rotate(-angle);
       draw.translate(-x, -y);
     }
@@ -297,40 +310,31 @@ jsPsych.plugins["card_game"] = (function() {
 
     // putting it all together
 
-    function draw_current_cards(current_location, goal_location, transition_t, transition_a, transition_next) {
+    function draw_current_cards(my_hand, opponent_hand, transition_t) {
       draw.clearRect(0, 0, canvas.width, canvas.height);
-      var card_contents = "4_0";
-      var next_card_contents, opp_t;
-      if (typeof transition_t !== 'undefined') {
-        next_card_contents = trial.card_assignment[transition_next];
-        opp_t = Math.max(0, 2*transition_t - 1);
-      }
+      var card1_contents, card2_concents, opp_card1_contents, opp_card2_concents;
+      card1_contents = my_hand.substring(2,5);
+      card2_contents = my_hand.substring(6,9);
 
       draw_card_table();
 
       // opponent +  card(s)
       draw_opponent();
-      if ((typeof transition_t === 'undefined') || opp_t === 0) {
-        draw_card(o_c1_x, o_c1_y, card_scale, card_contents, -pi_6, pi);
-        draw_card(o_c2_x, o_c2_y, card_scale, card_contents, pi_6, pi);
-        draw_opponent_hand(o_lh_x, 250);
+      if (typeof transition_t === 'undefined') {
+        draw_card(o_c1_x, o_c1_y, card_scale, "", -pi_6, pi);
+        draw_card(o_c2_x, o_c2_y, card_scale, "", pi_6, pi);
       } else {
-        var nc_off = 60*Math.sin(opp_t * pi);
-        if (opp_t < 0.5)  {
-          draw_card(o_c_x + nc_off, 150, card_scale, next_card_contents);
-          draw_opponent_hand(o_lh_x + nc_off, 250);
-          draw_card(o_c_x, 150, card_scale, card_contents);
-        } else {
-          draw_card(o_c_x, 150, card_scale, card_contents);
-          draw_card(o_c_x + nc_off, 150, card_scale, next_card_contents);
-          draw_opponent_hand(o_lh_x + nc_off, 250);
-        }
+        opp_card1_contents = opponent_hand.substring(2,5);
+        opp_card2_contents = opponent_hand.substring(6,9);
+        draw_card(o_c1_x, o_c1_y, card_scale, opp_card1_contents, -pi_6, (1 - transition_t) * pi);
+        draw_card(o_c2_x, o_c2_y, card_scale, opp_card2_contents, pi_6, (1 - transition_t) * pi);
       }
+      draw_opponent_hand(o_lh_x, 250);
       draw_opponent_hand(o_rh_x, 250);
 
       //own cards
-      draw_card(300, 280, 1.4*card_scale, "0_1", -pi_6, 0);
-      draw_card(470, 240, 1.4*card_scale, "3_0s", pi_6, 0);
+      draw_card(300, 280, 1.4*card_scale, card1_contents, -pi_6, 0);
+      draw_card(470, 240, 1.4*card_scale, card2_contents, pi_6, 0);
 
       //bets/chips
 
@@ -355,28 +359,20 @@ jsPsych.plugins["card_game"] = (function() {
     }
 
     // animation + interaction
-    function next_card(current_location, action) {
-      if (Math.random() < trial.action_noise) {
-        action = 1 - action;
-      }
-      var generators = trial.group.get_some_generators()
-      new_location = trial.group.operation(current_location, generators[action]);
-      return new_location;
-    }
 
     var animation_time = 500; //length of animation in ms
     var post_animation_delay = 0; // how long to wait on last frame
     var num_frames = 40;
     var frame_time = animation_time/num_frames;
-    function animate_card_transition(card_loc, old_card, next_card, callback, remaining_frames) {
+    function animate_card_transition(my_hand, opponent_hand, callback, remaining_frames) {
         if (remaining_frames === 0) {
           setTimeout(callback, post_animation_delay);
           return;
         }
         remaining_frames = remaining_frames || num_frames;
-        draw_current_cards(old_card, trial.goal, (num_frames - remaining_frames)/num_frames, card_loc, next_card);
+        draw_current_cards(my_hand, opponent_hand, (num_frames - remaining_frames)/num_frames);
         setTimeout(function() {
-          animate_card_transition(card_loc, old_card, next_card, callback, remaining_frames-1);
+          animate_card_transition(my_hand, opponent_hand, callback, remaining_frames-1);
         }, frame_time);
     }
 
@@ -389,15 +385,15 @@ jsPsych.plugins["card_game"] = (function() {
       for (var bet_i = 0; bet_i < 3; bet_i ++) {
         curr_bet_loc = bet_locs[bet_i]
         if (x >= curr_bet_loc && x <= curr_bet_loc + bet_width && y >= bet_offset && y <= bet_offset + bet_height) {
-         alert(bet_i);
          return bet_i; 
         }
       }
       return false;
     }
 
-    // For event handlers
+    // Event handlers, game logic, interaction
     var clickable = true;
+    var bet;
 
     var getMouse = function(e,canvas) { //Gets mouse location relative to canvas, code stolen from https://github.com/simonsarris/Canvas-tutorials/blob/master/shapes.js
             var element = canvas;
@@ -430,11 +426,21 @@ jsPsych.plugins["card_game"] = (function() {
 
     canvas.addEventListener('mousedown', function(e) {
       var mouse = getMouse(e, canvas);
-      var bet_is = bet_contains(mouse.x, mouse.y)
+      var bet_is = bet_contains(mouse.x, mouse.y);
+
+      if (bet_is !== false) {
+        bet = bet_is; 
+        var result, opponent_hand;
+        result = play_hand(trial.game_type, trial.losers, trial.my_hand);
+        opponent_hand = result[1];
+        result = result[0];
+        animate_card_transition(trial.my_hand, opponent_hand, function() {alert('Done')});
+
+      }
     });
 
 
-    draw_current_cards(0, 3);
+    draw_current_cards(trial.my_hand);
 
     // data saving
     var trial_data = {
