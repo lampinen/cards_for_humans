@@ -393,7 +393,6 @@ jsPsych.plugins["card_game"] = (function() {
 
     // Event handlers, game logic, interaction
     var clickable = true;
-    var bet;
 
     var getMouse = function(e,canvas) { //Gets mouse location relative to canvas, code stolen from https://github.com/simonsarris/Canvas-tutorials/blob/master/shapes.js
             var element = canvas;
@@ -424,32 +423,75 @@ jsPsych.plugins["card_game"] = (function() {
             return {x: mx, y: my};
     };
 
+
+    // end of trial logic
+    function end_trial(my_hand, opponent_hand, win, bet, bet_rt) {
+        // data saving
+        var trial_data = {
+          game_type: trial.game_type,
+          losers: trial.losers,
+          my_hand: my_hand,
+          opponent_hand: opponent_hand,
+          win: win,
+          bet: bet,
+          bet_rt: bet_rt
+        };
+        console.log(trial_data)
+
+        // end trial
+        jsPsych.finishTrial(trial_data);
+
+    }
+
+    var result_display_time = 1000; // time results are shown in ms
+    function display_result_text(win, bet) {
+        var text0, text1, text2;
+        
+        text0 = "You";
+        if (win){
+          draw.fillStyle = "green";
+          text1 = "won!"; 
+          text2 = "+$" + bet; 
+        } else {
+          draw.fillStyle = "red";
+          text1 = "lost"; 
+          text2 = "-$" + bet; 
+        }
+        if (bet === 0) {
+            draw.fillStyle = "black";
+          text2 = "$0"; 
+        }
+        draw.textAlign = "center";
+        draw.font = "80px Arial";
+        draw.fillText(text0, 100, 100);
+        draw.fillText(text1, 100, 180);
+        draw.fillText(text2, 500, 140);
+    }
+
     canvas.addEventListener('mousedown', function(e) {
       var mouse = getMouse(e, canvas);
       var bet_is = bet_contains(mouse.x, mouse.y);
 
       if (bet_is !== false) {
+        var curr_time = (new Date()).getTime();
+        var bet_rt = curr_time - start_time;
         bet = bet_is; 
-        var result, opponent_hand;
+        var result, opponent_hand, win;
         result = play_hand(trial.game_type, trial.losers, trial.my_hand);
         opponent_hand = result[1];
-        result = result[0];
-        animate_card_transition(trial.my_hand, opponent_hand, function() {alert('Done')});
-
+        win = result[0];
+        animate_card_transition(trial.my_hand, opponent_hand, function() {
+            display_result_text(win, bet);
+            setTimeout(function() {
+                end_trial(trial.my_hand, opponent_hand, win, bet, bet_rt);
+            }, result_display_time);
+        });
       }
     });
 
-
+    var start_time = (new Date()).getTime();
     draw_current_cards(trial.my_hand);
 
-    // data saving
-    var trial_data = {
-      game_type: trial.game_type,
-      losers: plugin.losers
-    };
-
-    // end trial
-    jsPsych.finishTrial(trial_data);
   };
 
   return plugin;
