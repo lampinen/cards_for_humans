@@ -9,10 +9,6 @@ jsPsych.plugins["card_game"] = (function() {
   plugin.info = {
     name: "card-game",
     parameters: {
-//      parameter_name: {
-//        type: jsPsych.plugins.parameterType.INT, // BOOL, STRING, INT, FLOAT, FUNCTION, KEYCODE, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
-//        default: undefined
-//      },
       game_type: {
         type: jsPsych.plugins.parameterType.STRING,
         default: "straight_flush"
@@ -392,7 +388,7 @@ jsPsych.plugins["card_game"] = (function() {
     }
 
     // Event handlers, game logic, interaction
-    var clickable = true;
+    var clickable = false;
 
     var getMouse = function(e,canvas) { //Gets mouse location relative to canvas, code stolen from https://github.com/simonsarris/Canvas-tutorials/blob/master/shapes.js
             var element = canvas;
@@ -469,6 +465,10 @@ jsPsych.plugins["card_game"] = (function() {
     }
 
     canvas.addEventListener('mousedown', function(e) {
+      if (!clickable) {
+          return;
+      }
+      clickable = false;
       var mouse = getMouse(e, canvas);
       var bet_is = bet_contains(mouse.x, mouse.y);
 
@@ -491,6 +491,7 @@ jsPsych.plugins["card_game"] = (function() {
 
     var start_time = (new Date()).getTime();
     draw_current_cards(trial.my_hand);
+    clickable = true;
 
   };
 
