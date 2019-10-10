@@ -11,15 +11,66 @@
   </head>
   <body></body>
   <script>
+    var game_type = "straight_flush";
     var timeline = [];
+    var num_sampling_bins = 8;
 
-    var test_card_game = {
-      type: "card_game",
-      game_type: "straight_flush",
-      losers: false,
-      my_hand: choice(straight_flush_hand_order) 
-    };
-    timeline.push(test_card_game);
+
+    // block 1: training on original game, see results
+    var losers = false; 
+    var see_result = true;
+    var trials_per_bin = 2;
+
+    var hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
+    shuffle(hands);
+    var this_trial;
+
+    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
+        this_trial = {
+          type: "card_game",
+          game_type: game_type,
+          losers: losers,
+          see_result: see_result,
+          my_hand: hands[hand_i] 
+        };
+        timeline.push(this_trial);
+
+    }
+
+    // block 2: testing on original game, don't see results
+    see_result = false;
+    hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
+    shuffle(hands);
+
+    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
+        this_trial = {
+          type: "card_game",
+          game_type: game_type,
+          losers: losers,
+          see_result: see_result,
+          my_hand: hands[hand_i] 
+        };
+        timeline.push(this_trial);
+
+    }
+
+    // block 3: losers version, don't see results
+    losers = false;
+    hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
+    shuffle(hands);
+
+    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
+        this_trial = {
+          type: "card_game",
+          game_type: game_type,
+          losers: losers,
+          see_result: see_result,
+          my_hand: hands[hand_i] 
+        };
+        timeline.push(this_trial);
+
+    }
+    console.log(timeline);
 
     jsPsych.init({
       timeline: timeline

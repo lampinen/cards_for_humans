@@ -21,6 +21,10 @@ jsPsych.plugins["card_game"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: "" 
       },
+      see_result: { // on test blocks, player will not see the result of their play
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: true 
+      },
       canvas_height: {
         type: jsPsych.plugins.parameterType.INT,
         default: 400 
@@ -344,14 +348,14 @@ jsPsych.plugins["card_game"] = (function() {
       draw.strokeStyle = "Black";
       draw.textAlign = "center";
       draw.font = "40px Arial";
-      draw.strokeText("$2", 270, 308);
-      draw.fillText("$2", 270, 308);
+      draw.strokeText("2", 270, 308);
+      draw.fillText("2", 270, 308);
 
-      draw.strokeText("$1", 200, 315);
-      draw.fillText("$1", 200, 315);
+      draw.strokeText("1", 200, 315);
+      draw.fillText("1", 200, 315);
 
-      draw.strokeText("$0", 135, 325);
-      draw.fillText("$0", 135, 325);
+      draw.strokeText("0", 135, 325);
+      draw.fillText("0", 135, 325);
     }
 
     // animation + interaction
@@ -426,6 +430,7 @@ jsPsych.plugins["card_game"] = (function() {
         var trial_data = {
           game_type: trial.game_type,
           losers: trial.losers,
+          see_result: trial.see_result,
           my_hand: my_hand,
           opponent_hand: opponent_hand,
           win: win,
@@ -447,21 +452,31 @@ jsPsych.plugins["card_game"] = (function() {
         if (win){
           draw.fillStyle = "green";
           text1 = "won!"; 
-          text2 = "+$" + bet; 
+          text2 = "+$0.0" + bet; 
         } else {
           draw.fillStyle = "red";
           text1 = "lost"; 
-          text2 = "-$" + bet; 
+          text2 = "-$0.0" + bet; 
         }
         if (bet === 0) {
             draw.fillStyle = "black";
-          text2 = "$0"; 
+          text2 = "0"; 
         }
         draw.textAlign = "center";
         draw.font = "80px Arial";
         draw.fillText(text0, 100, 100);
         draw.fillText(text1, 100, 180);
+        draw.font = "60px Arial";
         draw.fillText(text2, 500, 140);
+    }
+
+    var gray_display_time = 500;
+    function gray_display() {
+        draw.globalAlpha = 0.8;
+        draw.fillStyle = "gray";
+        draw.fillRect(0, 0, canvas.width, canvas.height);
+
+        draw.globalAlpha = 1;
     }
 
     canvas.addEventListener('mousedown', function(e) {
@@ -480,12 +495,20 @@ jsPsych.plugins["card_game"] = (function() {
         result = play_hand(trial.game_type, trial.losers, trial.my_hand);
         opponent_hand = result[1];
         win = result[0];
-        animate_card_transition(trial.my_hand, opponent_hand, function() {
-            display_result_text(win, bet);
+
+        if (trial.see_result) {
+            animate_card_transition(trial.my_hand, opponent_hand, function() {
+                display_result_text(win, bet);
+                setTimeout(function() {
+                    end_trial(trial.my_hand, opponent_hand, win, bet, bet_rt);
+                }, result_display_time);
+            });
+        } else {
+            gray_display();
             setTimeout(function() {
                 end_trial(trial.my_hand, opponent_hand, win, bet, bet_rt);
-            }, result_display_time);
-        });
+            }, gray_display_time);
+        }
       }
     });
 
