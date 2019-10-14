@@ -38,12 +38,18 @@ jsPsych.plugins["card_game"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
+    var possible_bets = [0, 5, 10];
+    var possible_bets_str = possible_bets.map(x => x.toString());
 
     var html = "";
     html += '<div id="card-game-canvas-div">';
     html += '<canvas id="card-game-canvas" class="card-game-canvas" style="border:1px solid #000000;" width=' + trial.canvas_width +' height=' + trial.canvas_height + '>';
     html += '</div>';
-    html += '<div id="card-game-instruction-div">Make your bet.<br /><br /></div>';
+    if (trial.losers) {
+      html += '<div id="card-game-instruction-div">Click on the amount you want to bet. Remember, you will be rewarded for losing!<br /><br /></div>';
+    } else {
+      html += '<div id="card-game-instruction-div">Click on the amount you want to bet.<br /><br /></div>';
+    }
     display_element.innerHTML = html; 
 
     var canvas = document.querySelector('canvas');
@@ -141,7 +147,7 @@ jsPsych.plugins["card_game"] = (function() {
 
 
         //card_string should be a "cardnumber_cardsuit" string
-        var card_number = card_string.charAt(0); 
+        var card_number = "" + (parseInt(card_string.charAt(0)) + 1); // don't want zeros on cards 
         var card_suit = card_string.charAt(2); 
 
         if (card_suit == 0){
@@ -348,14 +354,14 @@ jsPsych.plugins["card_game"] = (function() {
       draw.strokeStyle = "Black";
       draw.textAlign = "center";
       draw.font = "40px Arial";
-      draw.strokeText("2", 270, 308);
-      draw.fillText("2", 270, 308);
+      draw.strokeText(possible_bets_str[2], 270, 308);
+      draw.fillText(possible_bets_str[2], 270, 308);
 
-      draw.strokeText("1", 200, 315);
-      draw.fillText("1", 200, 315);
+      draw.strokeText(possible_bets_str[1], 200, 315);
+      draw.fillText(possible_bets_str[1], 200, 315);
 
-      draw.strokeText("0", 135, 325);
-      draw.fillText("0", 135, 325);
+      draw.strokeText(possible_bets_str[0], 135, 325);
+      draw.fillText(possible_bets_str[0], 135, 325);
     }
 
     // animation + interaction
@@ -426,8 +432,15 @@ jsPsych.plugins["card_game"] = (function() {
 
     // end of trial logic
     function end_trial(my_hand, opponent_hand, win, bet, bet_rt) {
+        var earnings;
+        if (win) {
+          earnings = possible_bets[bet];
+        } else {
+          earnings = -possible_bets[bet];
+        }
         // data saving
         var trial_data = {
+          type: trial.type,
           game_type: trial.game_type,
           losers: trial.losers,
           see_result: trial.see_result,
@@ -435,6 +448,7 @@ jsPsych.plugins["card_game"] = (function() {
           opponent_hand: opponent_hand,
           win: win,
           bet: bet,
+          earnings: earnings,
           bet_rt: bet_rt
         };
         console.log(trial_data)
@@ -452,11 +466,19 @@ jsPsych.plugins["card_game"] = (function() {
         if (win){
           draw.fillStyle = "green";
           text1 = "won!"; 
-          text2 = "+$0.0" + bet; 
+          if (possible_bets[bet] < 10) {
+            text2 = "+$0.0" + possible_bets_str[bet]; 
+          } else {
+            text2 = "+$0." + possible_bets_str[bet]; 
+          }
         } else {
           draw.fillStyle = "red";
           text1 = "lost"; 
-          text2 = "-$0.0" + bet; 
+          if (possible_bets[bet] < 10) {
+            text2 = "-$0.0" + possible_bets_str[bet]; 
+          } else {
+            text2 = "-$0." + possible_bets_str[bet]; 
+          }
         }
         if (bet === 0) {
             draw.fillStyle = "black";

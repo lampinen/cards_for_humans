@@ -12,68 +12,123 @@
   <body></body>
   <script>
     var game_type = "straight_flush";
+    var game_rules_string = "<p>In the card game you'll be playing, the best types of hands are two adjacent numbers of the same color, for example black 2 and black 3.</p><p>The next best hands are those with two adjacent numbers of different color.</p><p>The worst types of hands are those with matching numbers or non-adjacent numbers, like 4, 4 or 1, 3.</p><p>Hands of better types always beat worse hands. If two hands are of the same type, the one with the highest card wins. If the highest number matches between the hands, black cards beat red cards. If the highest cards of the two hands match in color and suit, the tie is broken by the lower cards. If everything matches, you win!</p>";
+
     var timeline = [];
     var num_sampling_bins = 8;
 
+    var experiment_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this experiment, you'll be playing a simple card game. You will receive a hand of two cards, each of which has a number (1-4) and a color (red or black). You'll be playing against an opponent. </p><p>You'll get to make a bet of 0, 1, or 2 cents. If your hand beats (or ties) your opponent's hand, you'll win the amount you bet. Otherwise, you'll lose the amount you bet. We'll pay you a bonus equal to your net earnings (or 0 if your earnings are negative).</p><p>Press any key to continue to the game rules.</p>"
+    };
+    timeline.push(experiment_instructions);
+
+    var game_instructions = {
+      type: "html-keyboard-response",
+      stimulus: game_rules_string +"<p>Press any key to continue.</p>"
+    };
+    timeline.push(game_instructions);
 
     // block 1: training on original game, see results
     var losers = false; 
     var see_result = true;
     var trials_per_bin = 2;
+    var current_block = 1;
 
     var hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
-    shuffle(hands);
-    var this_trial;
+    var block_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Now you get to play a few hands. After you bet, we'll show you your opponent's hand and how much you won (or lost), and at the end of these hands we'll tell you your total earnings.</p>"+ "<p>Press any key to continue.</p>"
+    };
+    timeline.push(block_instructions);
 
-    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
-        this_trial = {
-          type: "card_game",
-          game_type: game_type,
-          losers: losers,
-          see_result: see_result,
-          my_hand: hands[hand_i] 
+    function get_block_trials(current_block, hands, losers, see_result, trials_per_bin) {
+        shuffle(hands);
+        var this_trial;
+        var timeline = [];
+
+        for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
+            this_trial = {
+              type: "card_game",
+              game_type: game_type,
+              losers: losers,
+              see_result: see_result,
+              my_hand: hands[hand_i],
+              data: {block: current_block}
+            };
+            timeline.push(this_trial);
+        }
+
+        var performance_display = {
+          type: "html-keyboard-response",
+          stimulus: function() {
+            var all_trials = jsPsych.data.get().filter({type: "card_game"});
+            var this_block_trials = all_trials.filter({block: current_block});
+            var this_block_earnings = this_block_trials.select('earnings').sum();
+            console.log(all_trials);
+            console.log(all_trials.values());
+            console.log(total_earnings);
+            console.log(this_block_trials.values());
+            console.log(this_block_trials.select('earnings'));
+            console.log(this_block_trials.select('earnings').values);
+        
+            var display_string = "<p>You earned a total bonus of "+ this_block_earnings +" cents on this set of trials.</p>";
+
+            if (current_block > 1) {
+                var total_earnings = all_trials.select('earnings').sum();
+                display_string += "<p>You have earned a total bonus of "+ total_earnings +" cents over the experiment so far.</p>";
+            }
+
+            display_string += "<p>Press any key to continue.</p>";
+            return display_string;
+
+          }
         };
-        timeline.push(this_trial);
 
+        timeline.push(performance_display);
+
+        return timeline;
     }
+    
+    var this_block_trials = get_block_trials(current_block, hands, losers, see_result, trials_per_bin);
+    timeline = timeline.concat(this_block_trials);
+
 
     // block 2: testing on original game, don't see results
+    current_block = 2;
     see_result = false;
     hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
-    shuffle(hands);
 
-    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
-        this_trial = {
-          type: "card_game",
-          game_type: game_type,
-          losers: losers,
-          see_result: see_result,
-          my_hand: hands[hand_i] 
-        };
-        timeline.push(this_trial);
+    block_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>To test how well you understand the game, we'll now give you a series of hands where you won't see your results after you bet. You will just see your earnings at the end of the set of hands.</p><p>Press any key to continue.</p>"
+    };
+    timeline.push(block_instructions);
 
-    }
+    this_block_trials = get_block_trials(current_block, hands, losers, see_result, trials_per_bin);
+    timeline = timeline.concat(this_block_trials);
 
     // block 3: losers version, don't see results
-    losers = false;
+    current_block = 3;
+    losers = true;
     hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
-    shuffle(hands);
 
-    for (var hand_i = 0; hand_i < hands.length; hand_i ++) {
-        this_trial = {
-          type: "card_game",
-          game_type: game_type,
-          losers: losers,
-          see_result: see_result,
-          my_hand: hands[hand_i] 
-        };
-        timeline.push(this_trial);
+    block_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Now, we want you to try to lose the game! For the remainder of the experiment, if you lose the hand, you'll earn the amount you bet, and if you win, you'll lose the amount you bet.</p><p>As before, you won't see your results after you bet. You will just see your earnings at the end of the set of hands.</p><p>Press any key to continue.</p>"
+    };
+    timeline.push(block_instructions);
 
-    }
-    console.log(timeline);
+    this_block_trials = get_block_trials(current_block, hands, losers, see_result, trials_per_bin);
+    timeline = timeline.concat(this_block_trials);
+
+    
 
     jsPsych.init({
-      timeline: timeline
+      timeline: timeline,
+      on_finish: function() {
+        jsPsych.data.displayData('json'); 
+      }
     });
   </script>
 </html>
