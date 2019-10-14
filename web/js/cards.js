@@ -132,6 +132,10 @@ var straight_flush_losers_hand_order = [
 "h_0_0_0_0",
 ];
 
+// returns hand with cards in opposite order, for checking ties
+function swap_order(hand) {
+    return "h_" + hand.substring(6, 9) + "_" + hand.substring(2, 5);
+}
 
 function play_hand(game, losers, hand) {
     var opponents_hand, my_hand_index, opponents_hand_index, win;
@@ -146,7 +150,7 @@ function play_hand(game, losers, hand) {
     }
     opponents_hand_index = opponents_hand[0];
     opponents_hand = opponents_hand[1];
-    win = my_hand_index >= opponents_hand_index
+    win = (my_hand_index >= opponents_hand_index) || (hand === swap_order(opponents_hand));
     return [win, opponents_hand]; 
 }
 
