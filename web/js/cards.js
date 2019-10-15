@@ -150,8 +150,9 @@ function play_hand(game, losers, hand) {
     }
     opponents_hand_index = opponents_hand[0];
     opponents_hand = opponents_hand[1];
-    win = (my_hand_index >= opponents_hand_index) || (hand === swap_order(opponents_hand));
-    return [win, opponents_hand]; 
+    tie = (hand === opponents_hand )|| (hand === swap_order(opponents_hand));
+    win = (!tie) && (my_hand_index >= opponents_hand_index);
+    return [win, tie, opponents_hand]; 
 }
 
 

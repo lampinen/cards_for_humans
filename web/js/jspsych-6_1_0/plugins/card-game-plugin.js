@@ -431,9 +431,11 @@ jsPsych.plugins["card_game"] = (function() {
 
 
     // end of trial logic
-    function end_trial(my_hand, opponent_hand, win, bet, bet_rt) {
+    function end_trial(my_hand, opponent_hand, win, tie, bet, bet_rt) {
         var earnings;
-        if (win) {
+        if (tie) {
+          earnings = 0;
+        } else if (win) {
           earnings = possible_bets[bet];
         } else {
           earnings = -possible_bets[bet];
@@ -447,6 +449,7 @@ jsPsych.plugins["card_game"] = (function() {
           my_hand: my_hand,
           opponent_hand: opponent_hand,
           win: win,
+          tie: tie,
           bet: bet,
           earnings: earnings,
           bet_rt: bet_rt
@@ -459,11 +462,15 @@ jsPsych.plugins["card_game"] = (function() {
     }
 
     var result_display_time = 1000; // time results are shown in ms
-    function display_result_text(win, bet) {
+    function display_result_text(win, tie, bet) {
         var text0, text1, text2;
         
         text0 = "You";
-        if (win){
+        if (tie){
+          draw.fillStyle = "black";
+          text1 = "tied"; 
+          text2 = "0";
+        } else if (win){
           draw.fillStyle = "green";
           text1 = "won!"; 
           if (possible_bets[bet] < 10) {
@@ -481,7 +488,7 @@ jsPsych.plugins["card_game"] = (function() {
           }
         }
         if (bet === 0) {
-            draw.fillStyle = "black";
+          draw.fillStyle = "black";
           text2 = "0"; 
         }
         draw.textAlign = "center";
@@ -513,22 +520,23 @@ jsPsych.plugins["card_game"] = (function() {
         var curr_time = (new Date()).getTime();
         var bet_rt = curr_time - start_time;
         bet = bet_is; 
-        var result, opponent_hand, win;
+        var result, opponent_hand, win, tie;
         result = play_hand(trial.game_type, trial.losers, trial.my_hand);
-        opponent_hand = result[1];
+        opponent_hand = result[2];
         win = result[0];
+        tie = result[1];
 
         if (trial.see_result) {
             animate_card_transition(trial.my_hand, opponent_hand, function() {
-                display_result_text(win, bet);
+                display_result_text(win, tie, bet);
                 setTimeout(function() {
-                    end_trial(trial.my_hand, opponent_hand, win, bet, bet_rt);
+                    end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt);
                 }, result_display_time);
             });
         } else {
             gray_display();
             setTimeout(function() {
-                end_trial(trial.my_hand, opponent_hand, win, bet, bet_rt);
+                end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt);
             }, gray_display_time);
         }
       }
