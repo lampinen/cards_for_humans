@@ -46,7 +46,7 @@ jsPsych.plugins["card_game"] = (function() {
     html += '<canvas id="card-game-canvas" class="card-game-canvas" style="border:1px solid #000000;" width=' + trial.canvas_width +' height=' + trial.canvas_height + '>';
     html += '</div>';
     if (trial.losers) {
-      html += '<div id="card-game-instruction-div">Click on the amount you want to bet. Remember, you will be rewarded for losing!<br /><br /></div>';
+      html += '<div id="card-game-instruction-div">Click on the amount you want to bet. <b><font color="red">Remember, you will be rewarded for losing!</font></b><br /><br /></div>';
     } else {
       html += '<div id="card-game-instruction-div">Click on the amount you want to bet.<br /><br /></div>';
     }
