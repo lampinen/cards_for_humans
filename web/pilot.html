@@ -7,6 +7,9 @@
     <script src="js/jspsych-6_1_0/jspsych.js"></script>
     <script src="js/jspsych-6_1_0/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="js/jspsych-6_1_0/plugins/jspsych-instructions.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/jspsych-survey-text.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/jspsych-survey-multi-choice.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/jspsych-survey-likert.js"></script>
     <script src="js/jspsych-6_1_0/plugins/card-game-plugin.js"></script>
     <link href="js/jspsych-6_1_0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="css/cards_experiment.css" rel="stylesheet" type="text/css"></link>
@@ -16,7 +19,7 @@
     var game_type = "straight_flush";
     var game_rules_strings = ["<p>In the card game you'll be playing, the best types of hands are two adjacent numbers of the same color, for example black 2 and black 3.</p><p>The next best hands are those with two adjacent numbers of different color.</p><p>The worst types of hands are those with matching numbers or non-adjacent numbers, like 4, 4 or 1, 3.</p><p>Hands of better types always beat worse hands.</p>", "<p>If two hands are of the same type, the one with the highest card wins. If the highest cards of the two hands tie, the tie is broken by the lower cards.</p><p>If both cards are tied, black cards beat red cards, highest first, lowest if the high cards are the same color. If the hands are perfectly tied, you don't win or lose money.</p>"];
 
-    var instructions_strings = ["<p>In this experiment, you'll be playing a simple card game. You will receive a hand of two cards, each of which has a number (1-4) and a color (red or black). There are several decks in play, so there are multiple copies of each card, and two or more can appear in the same round.</p>", "<p>You will be playing against an opponent, trying to win money. You’ll get to make a bet of 0, 5, or 10 cents.</p><p>If your hand beats your opponent’s hand, you will win the amount you bet. If your opponent wins, you’ll lose the amount you bet. If you bet nothing, you won’t win or lose anything. Also, if you tie, you won’t win or lose either.</p><p>We'll pay you a bonus equal to your net earnings (or 0 if your earnings are negative).</p>"];
+    var instructions_strings = ["<p>Hi, welcome to our HIT. We are researchers from the Stanford Department of Psychology, conducting an experiment on game playing. This experiment should take about 15 minutes.</p><p>If you do not wish to participate, you may return the HIT at any time, but you will not be compensated unless you complete it.</p>", "<p>In this experiment, you'll be playing a simple card game. You will receive a hand of two cards, each of which has a number (1-4) and a color (red or black). There are several decks in play, so there are multiple copies of each card, and two or more can appear in the same round.</p>", "<p>You will be playing against an opponent, trying to win money. You’ll get to make a bet of 0, 5, or 10 cents.</p><p>If your hand beats your opponent’s hand, you will win the amount you bet. If your opponent wins, you’ll lose the amount you bet. If you bet nothing, you won’t win or lose anything. Also, if you tie, you won’t win or lose either.</p><p>We'll pay you a bonus equal to your net earnings (or 0 if your earnings are negative).</p>"];
     instructions_strings = instructions_strings.concat(game_rules_strings);
     instructions_strings.push("<p>Make sure you fully understand the instructions before proceeding to the experiment, otherwise you may not earn as much money as you can!</p><p>If you need to, you can go back to the earlier instructions to refresh your memory before proceeding.</p><p>Click next to start the experiment.</p>")
 
@@ -129,6 +132,45 @@
     timeline = timeline.concat(this_block_trials);
 
     
+    // debrief: 
+
+    var debrief_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Great, we just have a few questions to ask you and then you'll be finished!</p><p>Press any key to continue.</p>"
+    };
+    timeline.push(debrief_instructions);
+
+    var well_options = ["Very poorly", "Moderately poorly", "Okay", "Moderately well", "Very well"];
+    var exp_debrief = {
+        type: 'survey-likert',
+        questions: [{prompt: "How well do you feel that you understood the instructions in this experiment?",
+                     labels: well_options, required: true},
+                    {prompt: "How do you feel you performed in the first part of this experiment (while trying to win)?",
+                     labels: well_options, required: true},
+                    {prompt: "How do you feel you performed in the last part of this experiment (while trying to lose)?",
+                     labels: well_options, required: true}]
+    }
+    timeline.push(exp_debrief);
+
+    var demographics = {
+        type: 'survey-multi-choice',
+        questions: [{prompt: "What is your age?",
+                     options: ["<25", "25-35", "35-45", "45-55", "55-65", ">65"]},
+                    {prompt: "What is your level of education?",
+                     options: ["No high school degree", "High school degree or GED", "Some college", "Associates or other two-year degree", "Bachelor's degree", "Master's degree", "PhD, JD, MD or similar"]},
+                    {prompt: "What is your gender?",
+                     options: ["Male", "Female", "Other", "Decline to state"]},
+                    {prompt: "What is your race/ethnicity?",
+                     options: ["Asian","American Indian/Native American", "Black or African American", "Hispanic", "White", "Other", "Decline to state"]}]
+    }
+    timeline.push(demographics);
+
+    var debrief = {
+        type: 'survey-text',
+        questions: [{prompt: "Do you have any comments on this HIT?", rows: 5}]
+    }
+    timeline.push(debrief);
+
 
     jsPsych.init({
       timeline: timeline,
