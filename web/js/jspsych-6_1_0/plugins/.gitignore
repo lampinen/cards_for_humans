@@ -1,4 +1,5 @@
 jspsych-*.js
 !jspsych-html-keyboard-response.js
 !jspsych-instructions.js
+!jspsych-survey*.js
 template/
