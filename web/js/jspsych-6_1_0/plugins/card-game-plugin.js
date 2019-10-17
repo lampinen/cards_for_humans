@@ -431,7 +431,7 @@ jsPsych.plugins["card_game"] = (function() {
 
 
     // end of trial logic
-    function end_trial(my_hand, opponent_hand, win, tie, bet, bet_rt) {
+    function end_trial(my_hand, opponent_hand, win, tie, bet, bet_rt, expected_value) {
         var earnings;
         if (tie) {
           earnings = 0;
@@ -452,6 +452,8 @@ jsPsych.plugins["card_game"] = (function() {
           tie: tie,
           bet: bet,
           earnings: earnings,
+          expected_value: expected_value,
+          expected_earnings: possible_bets[bet] * expected_value,
           bet_rt: bet_rt
         };
         console.log(trial_data)
@@ -520,9 +522,10 @@ jsPsych.plugins["card_game"] = (function() {
         var curr_time = (new Date()).getTime();
         var bet_rt = curr_time - start_time;
         bet = bet_is; 
-        var result, opponent_hand, win, tie;
+        var result, opponent_hand, win, tie, expected_value;
         result = play_hand(trial.game_type, trial.losers, trial.my_hand);
         opponent_hand = result[2];
+        expected_value = result[3];
         win = result[0];
         tie = result[1];
 
@@ -530,13 +533,13 @@ jsPsych.plugins["card_game"] = (function() {
             animate_card_transition(trial.my_hand, opponent_hand, function() {
                 display_result_text(win, tie, bet);
                 setTimeout(function() {
-                    end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt);
+                    end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt, expected_value);
                 }, result_display_time);
             });
         } else {
             gray_display();
             setTimeout(function() {
-                end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt);
+                end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt, expected_value);
             }, gray_display_time);
         }
       }
