@@ -542,6 +542,8 @@ jsPsych.plugins["card_game"] = (function() {
                 end_trial(trial.my_hand, opponent_hand, win, tie, bet, bet_rt, expected_value);
             }, gray_display_time);
         }
+      } else {
+        clickable = true;
       }
     });
 

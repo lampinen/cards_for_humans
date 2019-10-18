@@ -11,6 +11,7 @@
     <script src="js/jspsych-6_1_0/plugins/jspsych-survey-multi-choice.js"></script>
     <script src="js/jspsych-6_1_0/plugins/jspsych-survey-likert.js"></script>
     <script src="js/jspsych-6_1_0/plugins/card-game-plugin.js"></script>
+    <script src="js/jspsych-6_1_0/plugins/hand-comparison-plugin.js"></script>
     <link href="js/jspsych-6_1_0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="css/cards_experiment.css" rel="stylesheet" type="text/css"></link>
   </head>
@@ -34,6 +35,21 @@
       pages: instructions_strings
     };
     timeline.push(experiment_instructions);
+
+    // hand comparisons
+    var block_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>To make sure you understand the rules, we'll give you a few example pairs of hands. Just click on the one that would win, and we'll tell you if you're correct and why.</p><p>Press any key to continue.</p>"
+    };
+    timeline.push(block_instructions);
+
+    var hand_comparison = {
+      type: "hand_comparison",
+      hand_win: "h_3_1_2_1",
+      hand_lose: "h_3_0_2_0",
+      explanation: "Black cards beat red cards if the hands are tied."
+    };
+    timeline.push(hand_comparison);
 
     // block 1: training on original game, see results
     var losers = false; 
