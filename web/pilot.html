@@ -45,9 +45,33 @@
 
     var hand_comparison = {
       type: "hand_comparison",
+      hand_win: "h_1_0_2_1",
+      hand_lose: "h_3_0_0_0",
+      explanation: "Adjacent cards beat non-adjacent."
+    };
+    timeline.push(hand_comparison);
+
+    hand_comparison = {
+      type: "hand_comparison",
+      hand_win: "h_0_0_1_0",
+      hand_lose: "h_3_0_2_1",
+      explanation: "Same-suit adjacent beats different suit."
+    };
+    timeline.push(hand_comparison);
+
+    hand_comparison = {
+      type: "hand_comparison",
+      hand_win: "h_3_0_0_1",
+      hand_lose: "h_2_0_2_1",
+      explanation: "Highest card breaks ties."
+    };
+    timeline.push(hand_comparison);
+
+    hand_comparison = {
+      type: "hand_comparison",
       hand_win: "h_3_1_2_1",
-      hand_lose: "h_3_0_2_0",
-      explanation: "Black cards beat red cards if the hands are tied."
+      hand_lose: "h_2_0_3_0",
+      explanation: "Black cards beat red cards if the numbers are tied."
     };
     timeline.push(hand_comparison);
 

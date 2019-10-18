@@ -149,8 +149,8 @@ jsPsych.plugins["hand_comparison"] = (function() {
 
 
     var hand0_loc = 25;
-    var hand1_loc = 350;
-    var hand_width = 1.5 * card_scale;
+    var hand1_loc = 300;
+    var hand_width = 1.7 * card_scale;
     var hand_height = 1.25 * card_scale;
 
     var hands = [trial.hand_win, trial.hand_lose];
@@ -166,10 +166,10 @@ jsPsych.plugins["hand_comparison"] = (function() {
       hand2_card2_contents = hands[hand_indices[1]].substring(6,9);
 
       draw_card(hand0_loc, 160, card_scale, card1_contents, -pi_6, 0);
-      draw_card(hand0_loc + card_scale, 120, card_scale, card2_contents, pi_6, 0);
+      draw_card(hand0_loc + 1.2 * card_scale, 115, card_scale, card2_contents, pi_6, 0);
 
       draw_card(hand1_loc, 160, card_scale, hand2_card1_contents, -pi_6, 0);
-      draw_card(hand1_loc + card_scale, 120, card_scale, hand2_card2_contents, pi_6, 0);
+      draw_card(hand1_loc + 1.2 *card_scale, 115, card_scale, hand2_card2_contents, pi_6, 0);
     }
 
     var hand_click_offset = 0.25 * card_scale;
