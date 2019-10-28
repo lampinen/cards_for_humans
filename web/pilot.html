@@ -24,7 +24,6 @@
     instructions_strings = instructions_strings.concat(game_rules_strings);
     instructions_strings.push("<p>Make sure you fully understand the instructions before proceeding to the experiment, otherwise you may not earn as much money as you can!</p><p>If you need to, you can go back to the earlier instructions to refresh your memory before proceeding.</p><p>Click next to start the experiment.</p>")
 
-
     var timeline = [];
     var num_sampling_bins = 8;
     var total_earnings = 0;
@@ -211,11 +210,24 @@
     }
     timeline.push(debrief);
 
+    var turkInfo = jsPsych.turkInfo();
 
     jsPsych.init({
       timeline: timeline,
       on_finish: function() {
-        jsPsych.data.displayData('json'); 
+        document.getElementsByTagName('body')[0].innerHTML = "Thank you for completing this HIT. Please do not leave this page. Your responses are being saved, and your completion will be recorded as soon as that is done (should be no more than 1-2 minutes).";
+        var final_submit = function() {
+          jsPsych.turk.submitToTurk({"completion_time": (new Date().getTime()),
+                                     "hitId": turkInfo.hitId,
+                                     "assignmentId": turkInfo.assigmentId});
+        };
+        var worker_id; 
+        if (turkInfo.previewMode || turkInfo.outsideTurk) {
+          worker_id = "time_" + (new Date().getTime());
+        } else {
+          worker_id = turkInfo.workerId;
+        }
+        saveData("cards/pilot/" + worker_id + ".json", jsPsych.data.dataAsJSON(), final_submit, final_submit);
       }
     });
   </script>
