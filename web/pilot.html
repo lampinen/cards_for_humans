@@ -25,7 +25,7 @@
     instructions_strings.push("<p>Make sure you fully understand the instructions before proceeding to the experiment, otherwise you may not earn as much money as you can!</p><p>If you need to, you can go back to the earlier instructions to refresh your memory before proceeding.</p><p>Click next to start the experiment.</p>")
 
     var timeline = [];
-    var num_sampling_bins = 8;
+    var num_sampling_bins = 16;
     var total_earnings = 0;
 
     var experiment_instructions = {
@@ -144,6 +144,7 @@
 
     // block 2: testing on original game, don't see results
     current_block = 2;
+    trials_per_bin = 1;
     see_result = false;
     hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
 
