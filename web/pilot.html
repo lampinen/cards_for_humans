@@ -228,7 +228,7 @@
         } else {
           worker_id = turkInfo.workerId;
         }
-        saveData("cards/pilot/" + worker_id + ".json", jsPsych.data.dataAsJSON(), final_submit, final_submit);
+        saveData("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
       }
     });
   </script>
