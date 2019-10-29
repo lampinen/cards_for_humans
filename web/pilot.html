@@ -23,7 +23,6 @@
       var ut_id = "cards_pilot";
       if (UTWorkerLimitReached(ut_id)) {
         repeat_turker = true;
-          document.getElementById('mturk_form').style.display = 'none';
           document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
       }
   })();
