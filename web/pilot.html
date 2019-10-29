@@ -256,7 +256,7 @@
           if (turkInfo.previewMode || turkInfo.outsideTurk) {
             worker_id = "time_" + (new Date().getTime());
           } else {
-            worker_id = turkInfo.workerId;
+            worker_id = turkInfo.workerId + "_time_" + (new Date().getTime());
           }
           save_data("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
         }
