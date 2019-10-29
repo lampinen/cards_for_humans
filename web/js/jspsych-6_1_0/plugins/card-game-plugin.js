@@ -468,6 +468,7 @@ jsPsych.plugins["card_game"] = (function() {
         var text0, text1, text2;
         
         text0 = "You";
+        text3 = "";
         if (tie){
           draw.fillStyle = "black";
           text1 = "tied"; 
@@ -489,16 +490,23 @@ jsPsych.plugins["card_game"] = (function() {
             text2 = "-$0." + possible_bets_str[bet]; 
           }
         }
+
+        draw.textAlign = "center";
         if (bet === 0) {
           draw.fillStyle = "black";
-          text2 = "0"; 
+          text3 = text1;
+          text1 = "have";
+          text2 = "would"; 
+          draw.font = "80px Arial";
+          draw.fillText(text2, 490, 100);
+          draw.fillText(text3, 490, 180);
+        } else {
+            draw.font = "60px Arial";
+            draw.fillText(text2, 500, 140);
         }
-        draw.textAlign = "center";
         draw.font = "80px Arial";
         draw.fillText(text0, 100, 100);
         draw.fillText(text1, 100, 180);
-        draw.font = "60px Arial";
-        draw.fillText(text2, 500, 140);
     }
 
     var gray_display_time = 500;

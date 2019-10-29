@@ -213,6 +213,11 @@
 
     var turkInfo = jsPsych.turk.turkInfo();
 
+    // TO REMOVE
+    hands = binned_sample(straight_flush_hand_order, 4, 1);
+    this_block_trials = get_block_trials(1, hands, false, true, 1);
+    timeline = this_block_trials;
+
     jsPsych.init({
       timeline: timeline,
       on_finish: function() {
@@ -228,7 +233,7 @@
         } else {
           worker_id = turkInfo.workerId;
         }
-        saveData("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
+        save_data("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
       }
     });
   </script>

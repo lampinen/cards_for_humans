@@ -35,13 +35,19 @@ function shuffle(a) {
 }
 
 //data/server communication
-function saveData(filename, filedata, callback, error_callback){
-   $.ajax({
-      type: 'post',
-      cache: false,
-      url: 'https://web.stanford.edu/~lampinen/cgi-bin/save_data.php',
-      data: {filename: filename, filedata: filedata},
-      success: callback,
-      error: error_callback
-   });
+function save_data(filename, filedata, callback, error_callback){
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4)
+        {
+            if (xhr.status == 200) {
+                callback();
+            } else {
+                error_callback();
+            }
+        }
+    }
+    xhr.open('POST', 'https://web.stanford.edu/~lampinen/cgi-bin/save_data.php');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send("filename=" + filename + "&filedata=" + filedata);
 }
