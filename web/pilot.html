@@ -83,7 +83,7 @@
     var hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
     var block_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Now you get to play a few hands. After you bet, we'll show you your opponent's hand and how much you won (or lost), and at the end of these hands we'll tell you your total earnings.</p>"+ "<p>Press any key to continue.</p>"
+      stimulus: "<p>Now you get to play a few hands. After you bet, we'll show you your opponent's hand and how much you won (or lost), and at the end of these hands we'll tell you your total earnings.</p>"+ "<p>Press any key to continue.</p>",
     };
     timeline.push(block_instructions);
 
@@ -144,7 +144,8 @@
 
     // block 2: testing on original game, don't see results
     current_block = 2;
-    //trials_per_bin = 1;
+    num_sampling_bins = 8;
+    trials_per_bin = 3;
     see_result = false;
     hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
 
@@ -164,13 +165,19 @@
 
     block_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Now, we want you to try to lose the game! For the remainder of the experiment, if you lose the hand, you'll earn the amount you bet, and if you win, you'll lose the amount you bet. As before, you won't win or lose anything if you tie your opponent.</p><p>As before, you won't see your results after you bet. You will just see your earnings at the end of the set of hands.</p><p>Press any key to continue.</p>"
+      stimulus: "<p>Now, we want you to try to lose the game! For the remainder of the experiment, if you bet and lose, you'll gain the amount you bet, and if you bet and win, you'll lose the amount you bet. As before, you won't win or lose anything if you tie your opponent, or if you don't bet.</p><p>As before, you won't see your results after you bet. You will just see your earnings at the end of the set of hands.</p><p>Press any key to continue.</p>"
     };
     timeline.push(block_instructions);
+    var block3_attention_check = {
+        type: 'survey-multi-choice',
+        questions: [{prompt: "To make sure you understand, please answer this question. Suppose you have a 3 and 4, and your opponent has a 3 and 1. If you bet 10 cents, which outcome would you get?",
+                     options: ["A gain of 10 cents", "A loss of 10 cents", "No gain or loss"], required: true}],
+        data: {response_trial_type: "attention_check"}
+    }
+    timeline.push(block3_attention_check);
 
     this_block_trials = get_block_trials(current_block, hands, losers, see_result, trials_per_bin);
     timeline = timeline.concat(this_block_trials);
-
     
     // debrief: 
 
@@ -188,7 +195,8 @@
                     {prompt: "How do you feel you performed in the first part of this experiment (while trying to win)?",
                      labels: well_options, required: true},
                     {prompt: "How do you feel you performed in the last part of this experiment (while trying to lose)?",
-                     labels: well_options, required: true}]
+                     labels: well_options, required: true}],
+        data: {response_trial_type: "debrief"}
     }
     timeline.push(exp_debrief);
 
@@ -201,13 +209,15 @@
                     {prompt: "What is your gender?",
                      options: ["Male", "Female", "Other", "Decline to state"]},
                     {prompt: "What is your race/ethnicity?",
-                     options: ["Asian","American Indian/Native American", "Black or African American", "Hispanic", "White", "Other", "Decline to state"]}]
+                     options: ["Asian","American Indian/Native American", "Black or African American", "Hispanic", "White", "Other", "Decline to state"]}],
+        data: {response_trial_type: "demographics"}
     }
     timeline.push(demographics);
 
     var debrief = {
         type: 'survey-text',
-        questions: [{prompt: "Do you have any comments on this HIT?", rows: 5}]
+        questions: [{prompt: "Do you have any comments on this HIT?", rows: 5}],
+        data: {response_trial_type: "comments"}
     }
     timeline.push(debrief);
 
@@ -220,7 +230,8 @@
         var final_submit = function() {
           jsPsych.turk.submitToTurk({"completion_time": (new Date().getTime()),
                                      "hitId": turkInfo.hitId,
-                                     "assignmentId": turkInfo.assigmentId});
+                                     "assignmentId": turkInfo.assigmentId,
+                                     "total_earnings": total_earnings});
         };
         var worker_id; 
         if (turkInfo.previewMode || turkInfo.outsideTurk) {

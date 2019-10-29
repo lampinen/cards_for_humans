@@ -472,7 +472,7 @@ jsPsych.plugins["card_game"] = (function() {
         if (tie){
           draw.fillStyle = "black";
           text1 = "tied"; 
-          text2 = "0";
+          text2 = "";
         } else if (win){
           draw.fillStyle = "green";
           text1 = "won!"; 
