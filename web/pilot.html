@@ -144,7 +144,7 @@
 
     // block 2: testing on original game, don't see results
     current_block = 2;
-    trials_per_bin = 1;
+    //trials_per_bin = 1;
     see_result = false;
     hands = binned_sample(straight_flush_hand_order, num_sampling_bins, trials_per_bin);
 
@@ -212,11 +212,6 @@
     timeline.push(debrief);
 
     var turkInfo = jsPsych.turk.turkInfo();
-
-    // TO REMOVE
-    hands = binned_sample(straight_flush_hand_order, 4, 1);
-    this_block_trials = get_block_trials(1, hands, false, true, 1);
-    timeline = this_block_trials;
 
     jsPsych.init({
       timeline: timeline,
