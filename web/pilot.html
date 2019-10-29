@@ -242,25 +242,29 @@
     var turkInfo = jsPsych.turk.turkInfo();
 
     if (!repeat_turker) {
-      jsPsych.init({
-        timeline: timeline,
-        on_finish: function() {
-          document.getElementsByTagName('body')[0].innerHTML = "Thank you for completing this HIT. Please do not leave this page. Your responses are being saved, and your completion will be recorded as soon as that is done (should be no more than 1-2 minutes).";
-          var final_submit = function() {
-            jsPsych.turk.submitToTurk({"completion_time": (new Date().getTime()),
-                                       "hitId": turkInfo.hitId,
-                                       "assignmentId": turkInfo.assigmentId,
-                                       "total_earnings": total_earnings});
-          };
-          var worker_id; 
-          if (turkInfo.previewMode || turkInfo.outsideTurk) {
-            worker_id = "time_" + (new Date().getTime());
-          } else {
-            worker_id = turkInfo.workerId + "_time_" + (new Date().getTime());
+      if (turkInfo.previewMode && !turkInfo.outsideTurk) {
+        document.getElementsByTagName('body')[0].innerHTML = "You must accept this HIT before working on it.";
+      } else {
+        jsPsych.init({
+          timeline: timeline,
+          on_finish: function() {
+            document.getElementsByTagName('body')[0].innerHTML = "Thank you for completing this HIT. Please do not leave this page. Your responses are being saved, and your completion will be recorded as soon as that is done (should be no more than 1-2 minutes).";
+            var final_submit = function() {
+              jsPsych.turk.submitToTurk({"completion_time": (new Date().getTime()),
+                                         "hitId": turkInfo.hitId,
+                                         "assignmentId": turkInfo.assigmentId,
+                                         "total_earnings": total_earnings});
+            };
+            var worker_id; 
+            if (turkInfo.previewMode || turkInfo.outsideTurk) {
+              worker_id = "time_" + (new Date().getTime());
+            } else {
+              worker_id = turkInfo.workerId + "_time_" + (new Date().getTime());
+            }
+            save_data("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
           }
-          save_data("cards/pilot/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
-        }
-      });
+        });
+      }
     }
   </script>
 </html>
