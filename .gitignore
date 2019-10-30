@@ -1,3 +1,6 @@
 *.csv
 mturk/
+raw_data/
 *.swp
+*.nb.html
+.*
