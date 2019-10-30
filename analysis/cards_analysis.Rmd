@@ -1,0 +1,78 @@
+---
+title: "Cards experiment analysis"
+output: html_notebook
+---
+
+```{r}
+library(rjson)
+#library(lme4)
+#library(lmerTest)
+library(tidyverse)
+
+```
+
+```{r}
+theme_set(theme_classic())
+```
+
+# load data
+
+```{r data_loading}
+data_dir = "../raw_data/ex0/"
+data_files = list.files(data_dir)
+
+cards_data = replicate(length(data_files), data.frame())
+
+for (i in 1:length(data_files)) {
+  f = data_files[i]
+  this_subj_data_list = fromJSON(file=sprintf("%s/%s", data_dir, f))
+  this_subj_cards_data = data.frame()
+  this_subj_global_data = data.frame()
+  
+  this_subj_card_data = this_subj_data_list[unlist(lapply(this_subj_data_list, function(x) {x$trial_type == "card_game"}))] %>%
+    bind_rows()
+  this_subj_attention_check_data = this_subj_data_list[unlist(lapply(this_subj_data_list, function(x) {x$trial_type == "survey-multi-choice" && x$response_trial_type == "attention_check"}))]
+  
+  att_chk_response = str_extract(this_subj_attention_check_data[[1]]$responses, '(?<=\\"Q0\\":\\")[A-za-z0-9 ]*(?=\\")')
+  
+  this_subj_card_data$attention_check_response = att_chk_response
+  this_subj_card_data$subject_id = i
+  cards_data[[i]] = this_subj_card_data
+}
+cards_data = bind_rows(cards_data)
+```
+
+# basic data processing
+
+```{r}
+cards_data = cards_data %>%
+  mutate(experiment_phase = case_when(
+    block == 1 ~ "training",
+    block == 2 ~ "testing_basic",
+    block == 3 ~ "testing_losing"
+  ),
+  attention_check_correct = attention_check_response == "A loss of 10 cents",
+  normalized_expected_earnings=expected_earnings/max(bet),
+  subject_id = as.factor(subject_id))
+```
+
+# Simple plots
+
+```{r}
+ggplot(cards_data %>% 
+         filter(experiment_phase != "training"),
+       aes(x = experiment_phase,
+           y = normalized_expected_earnings,
+           group = subject_id)) +
+  geom_line(stat="summary",
+            fun.y="mean") +
+  facet_wrap(~ attention_check_correct)
+```
+
+```{r}
+cards_data %>% 
+  filter(experiment_phase != "training") %>%
+  group_by(subject_id, experiment_phase, attention_check_correct) %>%
+  summarize(mean_norm_expected_earnings = mean(normalized_expected_earnings))
+```
+
