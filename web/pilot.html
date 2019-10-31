@@ -266,8 +266,11 @@
     function end_experiment() {
       document.getElementsByTagName('body')[0].innerHTML = "Thank you for completing this HIT. Please do not leave this page. Your responses are being saved, and your completion will be recorded as soon as that is done (should be no more than 1-2 minutes).";
       var final_submit = function() {
+        if (passed_phase_1 === true) {
+            total_earnings += 150;
+        }
         jsPsych.turk.submitToTurk({"completion_time": (new Date().getTime()),
-                                   "total_earnings": total_earnings + 150});
+                                   "total_earnings": total_earnings});
       };
       var worker_id; 
       if (turkInfo.previewMode || turkInfo.outsideTurk) {
