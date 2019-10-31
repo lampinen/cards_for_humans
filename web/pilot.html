@@ -29,11 +29,11 @@
   </script>
   <script>
     var game_type = "straight_flush";
-    var game_rules_strings = ["<p>In the card game you'll be playing, the best types of hands are two adjacent numbers of the same color, for example black 2 and black 3.</p><p>The next best hands are those with two adjacent numbers of different color.</p><p>The worst types of hands are those with matching numbers or non-adjacent numbers, like 4, 4 or 1, 3.</p><p>Hands of better types always beat worse hands.</p>", "<p>If two hands are of the same type, the one with the highest card wins. If the highest cards of the two hands tie, the tie is broken by the lower cards.</p><p>If both cards are tied, black cards beat red cards, highest first, lowest if the high cards are the same color. If the hands are perfectly tied, you don't win or lose money.</p>"];
+    var game_rules_strings = ["<p>In the card game, the best types of hands are two adjacent numbers of the same color, for example black 2 and black 3.</p><p>The next best hands are those with two adjacent numbers of different color, for example black 3 and red 4.</p><p>The worst types of hands are those with matching numbers or non-adjacent numbers, like 4, 4 or 1, 3.</p><p><b>Hands of better types always beat worse hands.</b></p>", "<p>If two hands are of the same type, the one with the highest card wins. If the highest cards of the two hands tie, the tie is broken by the lower cards.</p><p>If both cards are tied, black cards beat red cards, highest first, lowest if the high cards are the same color. If the hands are perfectly tied, you don't win or lose money.</p>"];
 
-    var instructions_strings = ["<p>Hi, welcome to our HIT. We are researchers from the Stanford Department of Psychology, conducting an experiment on game playing. This experiment should take 10-15 minutes. The base pay is $1.50, and there will be a bonus based on performance.</p><p>If you do not wish to participate, you may return the HIT at any time, but you will not be compensated unless you complete it.</p>", "<p>In this experiment, you'll be playing a simple card game. You will receive a hand of two cards, each of which has a number (1-4) and a color (red or black). There are several decks in play, so there are multiple copies of each card, and two or more can appear in the same round.</p>", "<p>You will be playing against an opponent, trying to win money. You'll get to make a bet of 0, 5, or 10 cents.</p><p>If your hand beats your opponent's hand, you will win the amount you bet. If your opponent wins, you'll lose the amount you bet. If you bet nothing, you won't win or lose anything. Also, if you tie, you won't win or lose either.</p><p>We'll pay you a bonus equal to your net earnings (or 0 if your earnings are negative).</p>"];
+    var instructions_strings = ["<p>Hi, welcome to our HIT. We are researchers from the Stanford Department of Psychology, conducting an experiment on game playing.</p><p>The first part of this experiment should take 5-10 minutes. The base pay is $0.75, and if you pass the end of the first phase, there will be a second phase that will take about 10 minutes. You will be paid a bonus of $1 for making it to this second phase, there will be an extra bonus based on performance in the second phase.</p><p>If you do not wish to participate, you may return the HIT at any time, but you will not be compensated unless you complete it.</p>", "<p>If you make it to the second phase of the experiment, you'll be playing a simple card game. In this first phase of the experiment, you'll learn the rules.</p><p>We'll test your understanding of the rules at the end of the first phase, and if you pass you'll make it to the second phase, where you'll earn a $1 bonus + an extra performance bonus.</p><p>Make sure you follow all instructions very carefully, in order to make it to the second phase of the experiment and earn the maximum bonus pay.</p>", "<p>In the card game, you will receive a hand of two cards, each of which has a number (1-4) and a color (red or black). There are several decks in play, so there are multiple copies of each card, and two or more can appear in the same round.</p>", "<p>You will be playing against an opponent, trying to win money. You'll get to make a bet of 0, 5, or 10 cents.</p><p>If your hand beats your opponent's hand, you will win the amount you bet. If your opponent wins, you'll lose the amount you bet. If you bet nothing, you won't win or lose anything. Also, if you tie, you won't win or lose either.</p><p>In the second phase, we'll pay you a bonus equal to your net earnings (or 0 if your earnings are negative), on top of the $1 bonus for making it to the second phase.</p>"];
     instructions_strings = instructions_strings.concat(game_rules_strings);
-    instructions_strings.push("<p>Make sure you fully understand the instructions before proceeding to the experiment, otherwise you may not earn as much money as you can!</p><p>If you need to, you can go back to the earlier instructions to refresh your memory before proceeding.</p><p>Click next to start the experiment.</p>")
+    instructions_strings.push("<p>We'll now test your understanding by giving you a few example pairs of hands. Just click on the hand from each pair that would win. <b>If you make more than one mistake in this section, the experiment will end. Make sure you fully understand the instructions before proceeding, otherwise you may not make it to the second phase!</b></p><p>If you need to, you can go back to the earlier instructions to refresh your memory before proceeding.</p><p>Click next to start the test.</p>")
 
     var timeline = [];
     var num_sampling_bins = 16;
@@ -47,11 +47,6 @@
     timeline.push(experiment_instructions);
 
     // hand comparisons
-    var block_instructions = {
-      type: "html-keyboard-response",
-      stimulus: "<p>To make sure you understand the rules, we'll give you a few example pairs of hands. Just click on the one that would win, and we'll tell you if you're correct and why.</p><p>Press any key to continue.</p>"
-    };
-    timeline.push(block_instructions);
 
     var hand_comparison = {
       type: "hand_comparison",
@@ -176,14 +171,14 @@
 
     block_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Now, we want you to try to lose the game! For the remainder of the experiment, if you bet and lose, you'll gain the amount you bet, and if you bet and win, you'll lose the amount you bet. As before, you won't win or lose anything if you tie your opponent, or if you don't bet.</p><p>Press any key to continue.</p>"
+      stimulus: "<p><font color='red'><b>Now, we want you to try to lose the game! For the remainder of the experiment, if you bet and lose, you'll gain the amount you bet, and if you bet and win, you'll lose the amount you bet.</b></font></p><p>As before, you won't win or lose anything if you tie your opponent, or if you don't bet.</p><p>Press any key to continue.</p>"
     };
     timeline.push(block_instructions);
 
     var block3_attention_check = {
         type: 'survey-multi-choice',
-        questions: [{prompt: "To make sure you understand, please answer this question. Suppose you have a 3 and 4, and your opponent has a 3 and 1. If you bet 10 cents, which outcome would you get?",
-                     options: ["A gain of 10 cents", "A loss of 10 cents", "No gain or loss"], required: true}],
+        questions: [{prompt: "To make sure you understand, please answer this question. From now on, I will earn money if I:",
+                     options: ["Bet and my hand wins.", "Bet and my hand loses."], required: true}],
         data: {response_trial_type: "attention_check"}
     }
     timeline.push(block3_attention_check);
@@ -261,7 +256,7 @@
             } else {
               worker_id = turkInfo.workerId + "_time_" + (new Date().getTime());
             }
-            save_data("cards/ex0/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
+            save_data("cards/ex0_1/" + worker_id + ".json", jsPsych.data.get().json(), final_submit, final_submit);
           }
         });
       }
