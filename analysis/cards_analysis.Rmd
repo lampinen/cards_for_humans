@@ -52,7 +52,7 @@ cards_data = cards_data %>%
     block == 3 ~ "testing_losing"
   ),
   attention_check_correct = attention_check_response == "A loss of 10 cents",
-  normalized_expected_earnings=expected_earnings/max(bet),
+  normalized_expected_earnings=expected_earnings/10,
   subject_id = as.factor(subject_id))
 ```
 
@@ -66,13 +66,19 @@ ggplot(cards_data %>%
            group = subject_id)) +
   geom_line(stat="summary",
             fun.y="mean") +
+  geom_hline(yintercept=0.5, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_hline(yintercept=-0.5, linetype=2, alpha=0.5) +
   facet_wrap(~ attention_check_correct)
+
+ggsave("plots/pilot_results.png", width=7, height=4)
 ```
 
 ```{r}
 cards_data %>% 
   filter(experiment_phase != "training") %>%
   group_by(subject_id, experiment_phase, attention_check_correct) %>%
-  summarize(mean_norm_expected_earnings = mean(normalized_expected_earnings))
+  summarize(mean_norm_expected_earnings = mean(normalized_expected_earnings),
+            mean_expected_earnings = mean(expected_earnings))
 ```
 
