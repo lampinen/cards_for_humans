@@ -41,7 +41,7 @@ jsPsych.plugins["hand_comparison"] = (function() {
     html += '<div id="card-game-canvas-div">';
     html += '<canvas id="card-game-canvas" class="card-game-canvas" style="border:1px solid #000000;" width=' + trial.canvas_width +' height=' + trial.canvas_height + '>';
     html += '</div>';
-    html += '<div id="card-game-instruction-div">Click on the winning hand.<br /><br /></div>';
+    html += '<div id="hand-comparison-instruction-div">Click on the winning hand. Remember, the best types of hands are same color adjacent numbers, the next best are different color adjacent numbers, and the worst are matching or non-adjacent numbers. If the hands are the same type, the highest card wins. If the numbers are the same, black cards beat red cards.</div>';
     display_element.innerHTML = html; 
 
     var canvas = document.querySelector('canvas');
@@ -216,7 +216,7 @@ jsPsych.plugins["hand_comparison"] = (function() {
 
 
     // end of trial logic
-    function end_trial(hand_choice, rt) {
+    function end_trial(hand_choice, correct, rt) {
         // data saving
         var trial_data = {
           type: trial.type,
@@ -225,6 +225,7 @@ jsPsych.plugins["hand_comparison"] = (function() {
           explanation: trial.explanation,
           hand_indices: hand_indices,
           hand_choice: hand_choice,
+          correct: correct,
           rt: rt
         };
 

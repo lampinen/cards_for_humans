@@ -2,3 +2,12 @@ p {
     width: 600px;
     text-align: left;
 }
+
+#hand-comparison-instruction-div {
+    text-align: left;
+    width: 600px;
+}
+
+#card-game-instruction-div {
+    width: 600px;
+}
