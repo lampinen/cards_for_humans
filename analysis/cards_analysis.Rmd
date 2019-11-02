@@ -18,7 +18,7 @@ theme_set(theme_classic())
 # load data
 
 ```{r data_loading}
-data_dir = "../raw_data/ex0/"
+data_dir = "../raw_data/ex0_1/"
 data_files = list.files(data_dir)
 
 cards_data = replicate(length(data_files), data.frame())
@@ -26,6 +26,10 @@ cards_data = replicate(length(data_files), data.frame())
 for (i in 1:length(data_files)) {
   f = data_files[i]
   this_subj_data_list = fromJSON(file=sprintf("%s/%s", data_dir, f))
+  if (length(this_subj_data_list) == 6) {
+    # flunked out
+    next
+  }
   this_subj_cards_data = data.frame()
   this_subj_global_data = data.frame()
   
@@ -33,7 +37,7 @@ for (i in 1:length(data_files)) {
     bind_rows()
   this_subj_attention_check_data = this_subj_data_list[unlist(lapply(this_subj_data_list, function(x) {x$trial_type == "survey-multi-choice" && x$response_trial_type == "attention_check"}))]
   
-  att_chk_response = str_extract(this_subj_attention_check_data[[1]]$responses, '(?<=\\"Q0\\":\\")[A-za-z0-9 ]*(?=\\")')
+  att_chk_response = str_extract(this_subj_attention_check_data[[1]]$responses, '(?<=\\"Q0\\":\\")[A-za-z0-9. ]*(?=\\")')
   
   this_subj_card_data$attention_check_response = att_chk_response
   this_subj_card_data$subject_id = i
@@ -51,7 +55,7 @@ cards_data = cards_data %>%
     block == 2 ~ "testing_basic",
     block == 3 ~ "testing_losing"
   ),
-  attention_check_correct = attention_check_response == "A loss of 10 cents",
+  attention_check_correct = attention_check_response == "Bet and my hand loses.",
   normalized_expected_earnings=expected_earnings/10,
   subject_id = as.factor(subject_id))
 ```
@@ -66,13 +70,47 @@ ggplot(cards_data %>%
            group = subject_id)) +
   geom_line(stat="summary",
             fun.y="mean") +
-  geom_hline(yintercept=0.5, linetype=2, alpha=0.5) +
+  geom_line(aes(group=1),
+            stat="summary",
+            fun.y="mean", color="red",
+            size=2) +
+  geom_hline(yintercept=0.25, linetype=2, alpha=0.5) +
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
-  geom_hline(yintercept=-0.5, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=-0.25, linetype=2, alpha=0.5) +
   facet_wrap(~ attention_check_correct)
 
-ggsave("plots/pilot_results.png", width=7, height=4)
+ggsave("plots/pilot2_results.png", width=7, height=4)
 ```
+
+```{r}
+ggplot(cards_data %>% 
+         filter(experiment_phase != "training",
+                attention_check_correct),
+       aes(x = expected_value,
+           y = 1*(bet > 0),
+           group = subject_id)) +
+  geom_point(stat="summary",
+             fun.y="mean",
+             position="jitter") +
+  stat_smooth(geom="line", method="glm", method.args = list(family = "binomial"),
+              se=F, alpha=0.3, size=1, color="black") +
+  geom_smooth(aes(group=1), 
+              method="glm",
+              method.args = list(family = "binomial"),
+              se=F,
+              color="blue") +
+  geom_vline(xintercept=0., color="red", linetype=2, size=2) +
+  facet_wrap(~ experiment_phase)
+```
+
+```{r}
+ggplot(cards_data %>%
+         filter(experiment_phase != "training"),
+       aes(x=subject_id, fill=as.factor(bet*5))) +
+  geom_bar(position="stack") +
+  facet_wrap(~ experiment_phase)
+```
+
 
 ```{r}
 cards_data %>% 
