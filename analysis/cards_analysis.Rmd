@@ -100,6 +100,7 @@ ggplot(cards_data %>%
               se=F,
               color="blue") +
   geom_vline(xintercept=0., color="red", linetype=2, size=2) +
+  labs(x="Expected return (* bet)", y="Fraction non-zero bets") +
   facet_wrap(~ experiment_phase)
 ```
 
@@ -108,7 +109,20 @@ ggplot(cards_data %>%
          filter(experiment_phase != "training"),
        aes(x=subject_id, fill=as.factor(bet*5))) +
   geom_bar(position="stack") +
-  facet_wrap(~ experiment_phase)
+  facet_wrap(~ experiment_phase) +
+  scale_fill_brewer(palette="Dark2") +
+  guides(fill=guide_legend(title="Bet"))
+```
+
+
+```{r}
+ggplot(cards_data %>%
+         filter(experiment_phase != "training"),
+       aes(x=expected_value, color=as.factor(bet*5))) +
+  geom_density(size=2) +
+  facet_wrap(~ experiment_phase) +
+  scale_color_brewer(palette="Dark2") +
+  guides(color=guide_legend(title="Bet"))
 ```
 
 
