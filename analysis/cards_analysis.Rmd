@@ -119,7 +119,7 @@ ggplot(cards_data %>%
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
   scale_color_brewer(palette="Set1") +
-  labs(x="Experiment phase", y="Normalized earnings") +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
   guides(color=F)
@@ -148,7 +148,7 @@ ggplot(cards_data %>%
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
   scale_color_brewer(palette="Set1") +
-  labs(x="Experiment phase", y="Normalized earnings") +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.05, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.95, alpha=0.5, label="Optimal") +
   guides(color=F)
@@ -175,8 +175,8 @@ ggplot(cards_data %>%
   geom_hline(yintercept=0.5, linetype=3, alpha=0.5) +
   geom_hline(yintercept=1., linetype=2, alpha=0.5) +
   labs(x="Experiment phase", y="Accuracy (bet if value > 0)") +
-  annotate("text", x=0.57, y=0.55, alpha=0.5, label="Chance") +
-  annotate("text", x=0.57, y=0.95, alpha=0.5, label="Optimal") +
+  annotate("text", x=0.57, y=0.53, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
   guides(color=F)
 
 ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation_supp_accuracy.png", width=6, height=4)
