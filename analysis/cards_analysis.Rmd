@@ -60,6 +60,21 @@ cards_data = cards_data %>%
   subject_id = as.factor(subject_id))
 ```
 
+# HoMM data
+
+TODO: actually compute this here
+```{r}
+homm_data = data.frame(experiment_phase = c("testing_basic", "testing_losing"),
+                       normalized_expected_earnings = c(0.503906, 0.250000))
+
+```
+
+```{r}
+homm_data = homm_data %>%
+  mutate(normalized_expected_earnings = normalized_expected_earnings / 2) # normalize by max bet
+```
+
+
 # Simple plots
 
 ```{r}
@@ -69,17 +84,103 @@ ggplot(cards_data %>%
            y = normalized_expected_earnings,
            group = subject_id)) +
   geom_line(stat="summary",
-            fun.y="mean") +
+            fun.y="mean",
+            alpha=0.2) +
   geom_line(aes(group=1),
             stat="summary",
-            fun.y="mean", color="red",
+            fun.y="mean",
+            color="red",
             size=2) +
   geom_hline(yintercept=0.25, linetype=2, alpha=0.5) +
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_hline(yintercept=-0.25, linetype=2, alpha=0.5) +
-  facet_wrap(~ attention_check_correct)
+  facet_wrap(~ attention_check_correct) 
 
 ggsave("plots/pilot2_results.png", width=7, height=4)
+```
+
+```{r}
+ggplot(cards_data %>% 
+         filter(experiment_phase != "training",
+                attention_check_correct) %>%
+         mutate(experiment_phase = ifelse(experiment_phase == "testing_basic", "Basic evaluation", "Losing evaluation")),
+       aes(x = experiment_phase,
+           y = normalized_expected_earnings * 4,
+           color = "Human",
+           group = subject_id)) +
+  geom_line(stat="summary",
+            fun.y="mean",
+            alpha=0.2) +
+  geom_line(aes(group=1),
+            stat="summary",
+            fun.y="mean",
+            size=2) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+#  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+  scale_color_brewer(palette="Set1") +
+  labs(x="Experiment phase", y="Normalized earnings") +
+  annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
+  guides(color=F)
+
+ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation.png", width=6, height=4)
+#ggsave("plots/mapping_results_passed.png", width=7, height=4)
+```
+
+```{r}
+ggplot(cards_data %>% 
+         filter(experiment_phase != "training",
+                attention_check_correct) %>%
+         mutate(experiment_phase = ifelse(experiment_phase == "testing_basic", "Basic evaluation", "Losing evaluation")),
+       aes(x = experiment_phase,
+           y = normalized_expected_earnings * 4,
+           color = "Human",
+           group = subject_id)) +
+  geom_line(stat="summary",
+            fun.y="mean",
+            alpha=0.2) +
+  geom_line(aes(group=1),
+            stat="summary",
+            fun.y="mean",
+            size=2) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+  scale_color_brewer(palette="Set1") +
+  labs(x="Experiment phase", y="Normalized earnings") +
+  annotate("text", x=0.57, y=0.05, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.95, alpha=0.5, label="Optimal") +
+  guides(color=F)
+
+ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation_supp_earnings.png", width=6, height=4)
+
+ggplot(cards_data %>% 
+         filter(experiment_phase != "training",
+                attention_check_correct,
+                expected_value != 0),
+       aes(x = experiment_phase,
+           y = (1 * (bet > 0) + -1 * (bet == 0)) * (1 * (expected_value > 0) + -1 * (expected_value < 0) ),
+           color="Human",
+           group = subject_id)) +
+  geom_line(stat="summary",
+            fun.y="mean",
+            alpha=0.2) +
+  geom_line(aes(group=1),
+            stat="summary",
+            fun.y="mean",
+            size=2) +
+  scale_color_brewer(palette="Set1") +
+  geom_hline(yintercept=0., linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0.5, linetype=3, alpha=0.5) +
+  geom_hline(yintercept=1., linetype=2, alpha=0.5) +
+  labs(x="Experiment phase", y="Accuracy (bet if value > 0)") +
+  annotate("text", x=0.57, y=0.55, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.95, alpha=0.5, label="Optimal") +
+  guides(color=F)
+
+ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation_supp_accuracy.png", width=6, height=4)
+#ggsave("plots/mapping_results_accuracy.png", width=6, height=4)
 ```
 
 ```{r}
@@ -100,8 +201,10 @@ ggplot(cards_data %>%
               se=F,
               color="blue") +
   geom_vline(xintercept=0., color="red", linetype=2, size=2) +
-  labs(x="Expected return (* bet)", y="Fraction non-zero bets") +
+  labs(x="Expected return", y="Fraction non-zero bets") +
   facet_wrap(~ experiment_phase)
+
+ggsave("plots/subject_response_fits.png", width=7, height=4)
 ```
 
 ```{r}
@@ -119,10 +222,12 @@ ggplot(cards_data %>%
 ggplot(cards_data %>%
          filter(experiment_phase != "training"),
        aes(x=expected_value, color=as.factor(bet*5))) +
-  geom_density(size=2) +
+  geom_density(size=2, stat="density") +
   facet_wrap(~ experiment_phase) +
   scale_color_brewer(palette="Dark2") +
   guides(color=guide_legend(title="Bet"))
+
+ggsave("plots/bets_by_expected_value.png", width=7, height=4)
 ```
 
 
@@ -134,3 +239,40 @@ cards_data %>%
             mean_expected_earnings = mean(expected_earnings))
 ```
 
+# dissertation plots
+
+```{r}
+for (phase in c("testing_basic", "testing_losing")) {
+  ggplot(cards_data %>% 
+           filter(experiment_phase == phase,
+                  attention_check_correct),
+         aes(x = expected_value,
+             y = 1*(bet > 0),
+             group = subject_id)) +
+    geom_point(stat="summary",
+               fun.y="mean",
+               position="jitter") +
+    stat_smooth(geom="line", method="glm", method.args = list(family = "binomial"),
+                se=F, alpha=0.3, size=1, color="black") +
+    geom_smooth(aes(group=1), 
+                method="glm",
+                method.args = list(family = "binomial"),
+                se=F,
+                color="#377eb8",
+                size=1.5) +
+    geom_vline(xintercept=0., color="#e41a1c", linetype=2, size=1.5) +
+    labs(x="Expected return", y="Fraction non-zero bets")
+  
+  ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_subject_response_fits.png", phase), width=4, height=3)
+  
+  ggplot(cards_data %>%
+         filter(experiment_phase == phase),
+         aes(x=expected_value, color=as.factor(bet * 5))) +
+    geom_density(size=2, stat="density") +
+    scale_color_manual(values=c("#bfd3e6", "#8c6bb1", "#4d004b")) +
+    guides(color=guide_legend(title="Bet")) +
+    labs(x="Expected value of hand", y="Density of responses")
+  
+  ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_bet_densities.png", phase), width=4, height=3)
+}
+```
