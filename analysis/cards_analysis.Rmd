@@ -344,5 +344,30 @@ ggplot(homm_and_human_data %>%
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
   guides(color=guide_legend(title=""))
 
-ggsave("../../dissertation/3-human-adaptation/figures/HoMM_only.png", width=6, height=4)
+ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_langauge.png", width=6, height=4)
+```
+
+```{r}
+ggplot(homm_and_human_data %>%
+         filter(result_type == "HoMM"),
+       aes(x = experiment_phase,
+           y = expected_reward,
+           color = result_type)) +
+  geom_line(aes(group=result_type),
+            stat="summary",
+            fun.y="mean",
+            size=2) +
+  geom_line(aes(group=as.factor(subject_id)),
+            alpha=0.5) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+#  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+#  scale_color_brewer(palette="Set1", drop=F) +
+  scale_color_manual(values=c("#e41a1c", "#984ea3",  "#477ec8"), drop=F) +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
+  annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
+  guides(color=guide_legend(title=""))
+
+ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png", width=6, height=4)
 ```
