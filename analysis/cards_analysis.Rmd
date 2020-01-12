@@ -313,7 +313,7 @@ ggplot(homm_and_human_data,
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
+  scale_color_manual(values=c("#477ec8", "#e41a1c", "#984ea3")) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
@@ -338,7 +338,7 @@ ggplot(homm_and_human_data %>%
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1", drop=F) +
-  scale_color_manual(values=c("#e41a1c", "#984ea3",  "#477ec8"), drop=F) +
+  scale_color_manual(values=c("#477ec8", "#e41a1c", "#984ea3"), drop=F) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
@@ -363,7 +363,7 @@ ggplot(homm_and_human_data %>%
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1", drop=F) +
-  scale_color_manual(values=c("#e41a1c", "#984ea3",  "#477ec8"), drop=F) +
+  scale_color_manual(values=c("#477ec8", "#e41a1c", "#984ea3"), drop=F) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
