@@ -121,6 +121,9 @@ ggplot(cards_data %>%
        aes(x = experiment_phase,
            y = normalized_expected_earnings * 4,
            group = subject_id)) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
   geom_line(stat="summary",
             fun.y="mean",
             color = "#984ea3",
@@ -130,9 +133,6 @@ ggplot(cards_data %>%
             fun.y="mean",
             color = "#984ea3",
             size=2) +
-  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
-  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
   scale_color_brewer(palette="Set1") +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.05, alpha=0.5, label="Chance") +
@@ -148,6 +148,9 @@ ggplot(cards_data %>%
        aes(x = experiment_phase,
            y = (1 * (bet > 0) + -1 * (bet == 0)) * (1 * (expected_value > 0) + -1 * (expected_value < 0) ),
            group = subject_id)) +
+  geom_hline(yintercept=0., linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0.5, linetype=3, alpha=0.5) +
+  geom_hline(yintercept=1., linetype=2, alpha=0.5) +
   geom_line(stat="summary",
             fun.y="mean",
             color="#984ea3",
@@ -158,9 +161,6 @@ ggplot(cards_data %>%
             color="#984ea3",
             size=2) +
   scale_color_brewer(palette="Set1") +
-  geom_hline(yintercept=0., linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0.5, linetype=3, alpha=0.5) +
-  geom_hline(yintercept=1., linetype=2, alpha=0.5) +
   labs(x="Experiment phase", y="Accuracy (bet if value > 0)") +
   annotate("text", x=0.57, y=0.53, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
@@ -302,14 +302,14 @@ ggplot(homm_and_human_data,
            y = expected_reward,
            color = result_type)) +
 
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=as.factor(subject_id)),
             alpha=0.5) +
   geom_line(aes(group=result_type),
             stat="summary",
             fun.y="mean",
             size=3) +
-  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
   scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
@@ -327,14 +327,14 @@ ggplot(homm_and_human_data %>%
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type)) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=result_type),
             stat="summary",
             fun.y="mean",
             size=2) +
   geom_line(aes(group=as.factor(subject_id)),
             alpha=0.5) +
-  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1", drop=F) +
   scale_color_manual(values=c("#e41a1c", "#984ea3",  "#477ec8"), drop=F) +
@@ -352,14 +352,14 @@ ggplot(homm_and_human_data %>%
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type)) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=result_type),
             stat="summary",
             fun.y="mean",
             size=2) +
   geom_line(aes(group=as.factor(subject_id)),
             alpha=0.5) +
-  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1", drop=F) +
   scale_color_manual(values=c("#e41a1c", "#984ea3",  "#477ec8"), drop=F) +
@@ -434,6 +434,9 @@ ggplot(change_data,
            y = ratio,
            color = result_type)) +
 
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
   geom_errorbar(stat="summary",
                 fun.data="mean_cl_normal",
                 width=0.25,
@@ -441,9 +444,6 @@ ggplot(change_data,
   geom_point(stat="summary",
              fun.y="mean",
              size=4) +
-  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
-  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
-  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
   scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
