@@ -447,7 +447,7 @@ ggplot(change_data,
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
   scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
-  labs(x="Type", y="Losing expected earnings (percent of winning)") +
+  labs(x="Type", y="Losing expected earnings (% of winning)") +
   annotate("text", x=0.6, y=0.07, alpha=0.5, label="Chance") +
   annotate("text", x=0.84, y=1.07, alpha=0.5, label="Optimal adaptation") +
   annotate("text", x=0.74, y=-0.93, alpha=0.5, label="No adaptation") +
