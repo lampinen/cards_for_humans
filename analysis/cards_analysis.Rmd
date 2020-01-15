@@ -5,9 +5,8 @@ output: html_notebook
 
 ```{r}
 library(rjson)
-#library(lme4)
-#library(lmerTest)
 library(tidyverse)
+library(Hmisc)
 
 ```
 
@@ -223,7 +222,7 @@ ggsave("plots/bets_by_expected_value.png", width=7, height=4)
 cards_data %>% 
   filter(experiment_phase != "training") %>%
   group_by(subject_id, experiment_phase, attention_check_correct) %>%
-  summarize(mean_norm_expected_earnings = mean(normalized_expected_earnings),
+  summarise(mean_norm_expected_earnings = mean(normalized_expected_earnings),
             mean_expected_earnings = mean(expected_earnings))
 ```
 
@@ -282,7 +281,7 @@ summarized_human_data = cards_data %>%
          expected_reward = expected_earnings / 5) %>%  # match bet scales
   select(subject_id, experiment_phase, expected_reward) %>%
   group_by(subject_id, experiment_phase) %>%
-  summarize(expected_reward = mean(expected_reward)) %>%
+  summarise(expected_reward = mean(expected_reward)) %>%
   ungroup() %>%
   mutate(result_type = "Human",
          subject_id = as.numeric(subject_id))
@@ -371,3 +370,94 @@ ggplot(homm_and_human_data %>%
 
 ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png", width=6, height=4)
 ```
+
+
+## change plot + test
+
+```{r}
+change_data = homm_and_human_data %>%
+  mutate(experiment_phase=str_extract(experiment_phase, "Basic|Losing")) %>%
+  spread(experiment_phase, expected_reward) %>%
+  mutate(ratio=Losing/Basic)
+```
+
+```{r}
+summary(lm(data=change_data, ratio ~ result_type))
+```
+```{r}
+perm_mean_diff_test = function(x, y, alpha=0.05) {
+  obs_t = t.test(x, y)$statistic
+  combined_data = c(x, y)
+  n_combined = length(combined_data)
+  n_x = length(x)
+  perm_iterate = function(x, y) {
+    perm = sample(n_combined)
+    x_samp = combined_data[perm[1:n_x]]
+    y_samp = combined_data[perm[-(1:n_x)]]
+    this_t = t.test(x_samp, y_samp)$statistic
+    return(this_t)
+  }
+  perms = replicate(500, perm_iterate(x, y))
+  quants = quantile(perms, probs=c(alpha/2, 1-alpha/2))
+  return(obs_t < quants[1] | obs_t > quants[2])
+}
+```
+
+```{r}
+set.seed(0)  # reproducibility
+perm_mean_diff_test(change_data %>% 
+                      filter(result_type == "HoMM") %>% 
+                      pull(ratio),
+                    change_data %>% 
+                      filter(result_type == "Human") %>% 
+                      pull(ratio))
+
+perm_mean_diff_test(change_data %>% 
+                      filter(result_type == "HoMM") %>% 
+                      pull(ratio),
+                    change_data %>% 
+                      filter(result_type == "Language baseline") %>% 
+                      pull(ratio))
+
+perm_mean_diff_test(change_data %>% 
+                      filter(result_type == "HoMM") %>% 
+                      pull(ratio),
+                    change_data %>% 
+                      filter(result_type == "Language baseline") %>% 
+                      pull(ratio),
+                    0.005)
+```
+
+```{r}
+ggplot(change_data,
+       aes(x = result_type,
+           y = ratio,
+           color = result_type)) +
+
+  geom_errorbar(stat="summary",
+                fun.data="mean_cl_normal",
+                width=0.25,
+                size=1) +
+  geom_point(stat="summary",
+             fun.y="mean",
+             size=4) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+#  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+#  scale_color_brewer(palette="Set1") +
+  scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
+  labs(x="Type", y="Losing expected earnings (percent of winning)") +
+  annotate("text", x=0.6, y=0.07, alpha=0.5, label="Chance") +
+  annotate("text", x=0.84, y=1.07, alpha=0.5, label="Optimal adaptation") +
+  annotate("text", x=0.74, y=-0.93, alpha=0.5, label="No adaptation") +
+  annotate("path",x=c(1,1,2,2),y=c(1.4,1.5,1.5,1.4),alpha=0.5) +
+  annotate("text", x=1.5, y=1.57, alpha=0.5, label="n.s. (both)") +
+  annotate("path",x=c(1,1,3,3),y=c(1.55,1.65,1.65,1.55),alpha=0.5) +
+  annotate("text", x=2, y=1.73, alpha=0.5, label="p < 0.01 (both perm- and t-test)") +
+  scale_y_continuous(breaks = c(-1, 0, 1), labels = c("-100%", "0%", "100%")) +
+  guides(color=F)
+
+ggsave("../../dissertation/3-human-adaptation/figures/change_scores.png", width=6, height=4)
+```
+
