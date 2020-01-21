@@ -302,10 +302,10 @@ homm_and_human_data = bind_rows(homm_data, summarized_human_data) %>%
 
 Some nominal data for demonstration purposes:
 ```{r}
-ggplot(data.frame(result_type = c("Perfect\nadaptation", "Perfect\nadaptation", "No\nadaptation", "No\nadaptation", "Getting\nconfused", "Getting\nconfused"),
+ggplot(data.frame(result_type = factor(c(0, 0, 1, 1, 2, 2), labels=c("Perfect\nadaptation", "Getting\nconfused", "No\nadaptation")),
                   experiment_phase = factor(rep(c("Winning", "Losing"), times=3),
                                             levels=c("Winning", "Losing")),
-                  expected_reward = c(1, 1, 1, -1, 1, 0.)),
+                  expected_reward = c(1, 1, 1, 0., 1, -1)),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type,
@@ -315,7 +315,7 @@ ggplot(data.frame(result_type = c("Perfect\nadaptation", "Perfect\nadaptation", 
   geom_line(stat="identity", size=3) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#fee08b", "#d73027", "#1a9850")) +
+  scale_color_manual(values=c("#1a9850", "#fee08b", "#d73027")) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
