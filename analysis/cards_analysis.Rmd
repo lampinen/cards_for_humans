@@ -315,7 +315,7 @@ ggplot(data.frame(result_type = factor(c(0, 0, 1, 1, 2, 2), labels=c("Perfect\na
   geom_line(stat="identity", size=3) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#1a9850", "#fee08b", "#d73027")) +
+  scale_color_manual(values=c("#1a9850", "#888888", "#000000")) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
