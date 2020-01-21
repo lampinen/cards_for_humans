@@ -410,7 +410,10 @@ change_data = homm_and_human_data %>%
 ```
 
 ```{r}
-summary(lm(data=change_data, ratio ~ result_type))
+t.test(ratio ~ result_type, change_data %>%
+         filter(result_type != "Human"))
+t.test(ratio ~ result_type, change_data %>%
+         filter(result_type != "Language"))
 ```
 ```{r}
 perm_mean_diff_test = function(x, y, alpha=0.05) {
