@@ -294,6 +294,9 @@ homm_and_human_data = bind_rows(homm_data, summarized_human_data) %>%
          subject_id = case_when(result_type == "Human" ~ subject_id,
                                 result_type == "HoMM" ~ subject_id + 40,
                                 T ~ subject_id + 50),  # this just makes the plot work
+         experiment_phase = factor(experiment_phase, 
+                                   levels = c("Basic evaluation", "Losing evaluation"),
+                                   labels = c("Winning", "Losing")),
          result_type = factor(result_type))
 ```
 
@@ -402,9 +405,8 @@ ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png",
 
 ```{r}
 change_data = homm_and_human_data %>%
-  mutate(experiment_phase=str_extract(experiment_phase, "Basic|Losing")) %>%
   spread(experiment_phase, expected_reward) %>%
-  mutate(ratio=Losing/Basic)
+  mutate(ratio=Losing/Winning)
 ```
 
 ```{r}
@@ -442,14 +444,14 @@ perm_mean_diff_test(change_data %>%
                       filter(result_type == "HoMM") %>% 
                       pull(ratio),
                     change_data %>% 
-                      filter(result_type == "Language baseline") %>% 
+                      filter(result_type == "Language") %>% 
                       pull(ratio))
 
 perm_mean_diff_test(change_data %>% 
                       filter(result_type == "HoMM") %>% 
                       pull(ratio),
                     change_data %>% 
-                      filter(result_type == "Language baseline") %>% 
+                      filter(result_type == "Language") %>% 
                       pull(ratio),
                     0.005)
 ```
@@ -478,7 +480,7 @@ ggplot(change_data,
   annotate("text", x=0.84, y=1.07, alpha=0.5, label="Optimal adaptation") +
   annotate("text", x=0.74, y=-0.93, alpha=0.5, label="No adaptation") +
   annotate("path",x=c(1,1,2,2),y=c(1.4,1.5,1.5,1.4),alpha=0.5) +
-  annotate("text", x=1.5, y=1.57, alpha=0.5, label="n.s. (both)") +
+  annotate("text", x=1.5, y=1.57, alpha=0.5, label="n.s. (both p > 0.05)") +
   annotate("path",x=c(1,1,3,3),y=c(1.55,1.65,1.65,1.55),alpha=0.5) +
   annotate("text", x=2, y=1.73, alpha=0.5, label="p < 0.01 (both perm- and t-test)") +
   scale_y_continuous(breaks = c(-1, 0, 1), labels = c("-100%", "0%", "100%")) +
