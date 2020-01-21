@@ -268,7 +268,8 @@ for (phase in c("testing_basic", "testing_losing")) {
 
 ```{r}
 homm_data = read_csv("HoMM_data.csv") %>%
-  mutate(experiment_phase = ifelse(task == "source", "Basic evaluation", "Losing evaluation")) %>%
+  mutate(experiment_phase = ifelse(task == "source", "Basic evaluation", "Losing evaluation"),
+         result_type = ifelse(result_type == "Language baseline", "Language", result_type)) %>%
   select(-task) %>%
   rename(subject_id = run)  # model runs ~= subjects
 ```
@@ -294,6 +295,31 @@ homm_and_human_data = bind_rows(homm_data, summarized_human_data) %>%
                                 result_type == "HoMM" ~ subject_id + 40,
                                 T ~ subject_id + 50),  # this just makes the plot work
          result_type = factor(result_type))
+```
+
+Some nominal data for demonstration purposes:
+```{r}
+ggplot(data.frame(result_type = c("Perfect\nadaptation", "Perfect\nadaptation", "No\nadaptation", "No\nadaptation", "Getting\nconfused", "Getting\nconfused"),
+                  experiment_phase = factor(rep(c("Winning", "Losing"), times=3),
+                                            levels=c("Winning", "Losing")),
+                  expected_reward = c(1, 1, 1, -1, 1, 0.)),
+       aes(x = experiment_phase,
+           y = expected_reward,
+           color = result_type,
+           group = result_type)) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_line(stat="identity", size=3) +
+#  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+#  scale_color_brewer(palette="Set1") +
+  scale_color_manual(values=c("#fee08b", "#d73027", "#1a9850")) +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
+  annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
+  annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
+  coord_cartesian(ylim=c(-0.1, 1.05)) +
+  guides(color=guide_legend(title=""))
+
+ggsave("../../../assorted_talks/HoMM/figures/cards_patterns_interpretation.png", width=6, height=4)
 ```
 
 ```{r}
