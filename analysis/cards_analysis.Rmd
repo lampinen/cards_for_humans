@@ -26,6 +26,7 @@ for (i in 1:length(data_files)) {
   f = data_files[i]
   this_subj_data_list = fromJSON(file=sprintf("%s/%s", data_dir, f))
   if (length(this_subj_data_list) == 6) {
+    print(i)
     # flunked out
     next
   }
@@ -400,7 +401,7 @@ ggplot(homm_and_human_data %>%
 
 ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png", width=6, height=4)
 ```
-### MM paper plot
+### MM paper plot and analysis
 ```{r}
 ggplot(homm_and_human_data %>%
          mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)"))),
@@ -431,6 +432,17 @@ ggplot(homm_and_human_data %>%
 ggsave("../../../networks/metamapping_paper/figures/cards_results.png", width=4, height=3)
 ```
 
+```{r}
+set.seed(0)
+homm_and_human_data %>%
+  mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)"))) %>%
+  group_by(experiment_phase, result_type) %>%
+  do(results=mean_cl_boot(.$expected_reward, na.rm=T)) %>%
+  mutate(mean_expected_reward=results$y,
+         CIlow=results$ymin,
+         CIhigh=results$ymax)
+```
+
 
 ## change plot + test
 
@@ -442,7 +454,7 @@ change_data = homm_and_human_data %>%
 
 ```{r}
 t.test(ratio ~ result_type, change_data %>%
-         filter(result_type != "Human"))
+         filter(result_type != "Human"), paired=T)
 t.test(ratio ~ result_type, change_data %>%
          filter(result_type != "Language"))
 ```
@@ -521,5 +533,58 @@ ggplot(change_data,
   guides(color=F)
 
 ggsave("../../dissertation/3-human-adaptation/figures/change_scores.png", width=6, height=4)
+```
+
+
+# Are humans improving during the testing phase?
+
+```{r}
+less_summarized_human_data = cards_data %>% 
+  filter(experiment_phase != "training",
+         attention_check_correct) %>%
+  mutate(experiment_phase = ifelse(experiment_phase == "testing_basic", "Basic evaluation", "Losing evaluation"),
+         expected_reward = expected_earnings / 5, # match bet scales
+         phase_half = case_when(trial_index <= 52 ~ 1,
+                                trial_index <= 64 ~ 2,
+                                trial_index <= 81 ~ 3,
+                                T ~ 4)) %>%  
+  select(subject_id, experiment_phase, expected_reward, phase_half) %>%
+  group_by(subject_id, experiment_phase, phase_half) %>%
+  summarise(expected_reward = mean(expected_reward)) %>%
+  ungroup() %>%
+  mutate(result_type = "Human",
+         subject_id = as.numeric(subject_id)) %>%
+  mutate(expected_reward = expected_reward / 0.53,  # this makes optimal approx. 1.
+         experiment_phase = factor(experiment_phase, 
+                                   levels = c("Basic evaluation", "Losing evaluation"),
+                                   labels = c("Winning", "Losing")))
+```
+
+
+```{r}
+ggplot(less_summarized_human_data,
+       aes(x = phase_half,
+           y = expected_reward)) +
+
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_line(aes(group=as.factor(subject_id)),
+            alpha=0.2) +
+  geom_line(aes(group=result_type),
+            stat="summary",
+            fun.y="mean",
+            size=1.5) +
+#  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
+#  scale_color_brewer(palette="Set1") +
+  scale_color_manual(values=c("#e41a1c", "#984ea3", "#477ec8")) +
+  scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
+  annotate("text", x=2.2, y=0.05, alpha=0.5, label="Chance") +
+  annotate("text", x=2.2, y=1.05, alpha=0.5, label="Optimal") +
+  guides(color=guide_legend(title=NULL)) +
+  theme(legend.position=c(0.15, 0.3),
+        legend.key.size = unit(0.5, 'lines'))
+
+ggsave("plots/little_learning_within_testing.png")
 ```
 
