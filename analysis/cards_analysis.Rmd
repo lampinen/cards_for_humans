@@ -652,11 +652,11 @@ ggplot(homm_lang_baseline_data,
                      labels=c("Language\n(HyperNetwork)",
                               "Language\n(Task-concatenated)")) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
-  annotate("text", x=0.57, y=0.03, alpha=0.5, label="Chance") +
-  annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal") +
+  annotate("text", x=0.6, y=0.05, alpha=0.5, label="Chance") +
+  annotate("text", x=0.6, y=0.95, alpha=0.5, label="Optimal") +
   scale_y_continuous(limits=c(-0.2, 1.02), breaks=c(0., 0.5, 1.)) +
-  guides(color=guide_legend(title=""))  +
-  theme(legend.position=c(0.9, 0.4))
+  guides(color=guide_legend(title=NULL))  +
+  theme(legend.position=c(0.8, 0.75))
 
 ggsave("../../dissertation/3-human-adaptation/figures/cards_lang_hyper_vs_tcnh.png", width=6, height=4)
 ggsave("../../../networks/metamapping_paper/figures/cards_lang_hyper_vs_tcnh.png", width=4, height=3)
