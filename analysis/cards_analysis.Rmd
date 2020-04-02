@@ -180,9 +180,7 @@ ggplot(cards_data %>%
        aes(x = expected_value,
            y = 1*(bet > 0),
            group = subject_id)) +
-  geom_point(stat="summary",
-             fun.y="mean",
-             position="jitter") +
+  geom_point(position=position_jitter(width=0.01, height=0.1)) +
   stat_smooth(geom="line", method="glm", method.args = list(family = "binomial"),
               se=F, alpha=0.3, size=1, color="black") +
   geom_smooth(aes(group=1), 
@@ -239,9 +237,8 @@ for (phase in c("testing_basic", "testing_losing")) {
          aes(x = expected_value,
              y = 1*(bet > 0),
              group = subject_id)) +
-    geom_point(stat="summary",
-               fun.y="mean",
-               position="jitter") +
+    geom_point(position=position_jitter(height=0.1, width=0.01),
+               alpha=0.2) +
     stat_smooth(geom="line", method="glm", method.args = list(family = "binomial"),
                 se=F, alpha=0.3, size=1, color="black") +
     geom_smooth(aes(group=1), 
