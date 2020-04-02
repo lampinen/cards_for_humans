@@ -189,7 +189,7 @@ ggplot(cards_data %>%
               se=F,
               color="blue") +
   geom_vline(xintercept=0., color="red", linetype=2, size=2) +
-  labs(x="Expected return", y="Fraction non-zero bets") +
+  labs(x="Expected return", y="Probability of non-zero bet") +
   facet_wrap(~ experiment_phase)
 
 ggsave("plots/subject_response_fits.png", width=7, height=4)
@@ -248,7 +248,7 @@ for (phase in c("testing_basic", "testing_losing")) {
                 color="#377eb8",
                 size=1.5) +
     geom_vline(xintercept=0., color="#e41a1c", linetype=2, size=1.5) +
-    labs(x="Expected return", y="Fraction non-zero bets")
+    labs(x="Expected return", y="Probability of non-zero bets")
   
   ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_subject_response_fits.png", phase), width=4, height=3)
   
