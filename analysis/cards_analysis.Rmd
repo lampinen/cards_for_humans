@@ -248,7 +248,7 @@ for (phase in c("testing_basic", "testing_losing")) {
                 color="#377eb8",
                 size=1.5) +
     geom_vline(xintercept=0., color="#e41a1c", linetype=2, size=1.5) +
-    labs(x="Expected return", y="Probability of non-zero bets")
+    labs(x="Expected return", y="Probability of a non-zero bet")
   
   ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_subject_response_fits.png", phase), width=4, height=3)
   
@@ -295,7 +295,8 @@ homm_and_human_data = bind_rows(homm_data, summarized_human_data) %>%
                                 result_type == "HoMM" ~ subject_id + 40,
                                 result_type == "Meta-class lesion" ~ subject_id + 50,
                                 result_type == "Language" ~ subject_id + 60,
-                                T ~ subject_id + 70),  # this just makes the plot work
+                                result_type == "Nonhomiconic" ~ subject_id + 70,
+                                T ~ subject_id + 80),  # this just makes the plot work
          
          experiment_phase = factor(experiment_phase, 
                                    levels = c("Basic evaluation", "Losing evaluation"),
@@ -310,7 +311,13 @@ homm_lang_baseline_data = homm_and_human_data %>%
 
 ```{r}
 homm_metaclass_lesion_data = homm_and_human_data %>%
-  filter(!grepl("Language|Human", result_type)) %>%
+  filter(result_type %in% c("HoMM", "Meta-class lesion")) %>%
+  mutate(result_type = factor(result_type))
+```
+
+```{r}
+homm_nonhomoiconic_lesion_data = homm_and_human_data %>%
+  filter(result_type %in% c("HoMM", "Nonhomoiconic")) %>%
   mutate(result_type = factor(result_type))
 ```
 
@@ -734,6 +741,64 @@ perm_mean_diff_test(homm_metaclass_lesion_data %>%
                       pull(expected_reward),
                     homm_metaclass_lesion_data %>% 
                       filter(result_type == "Meta-class lesion",
+                             experiment_phase == "Losing") %>% 
+                      pull(expected_reward))
+```
+
+# How does a nonhomoiconic architecture work?
+
+```{r}
+ggplot(homm_nonhomoiconic_lesion_data %>%
+         mutate(result_type = factor(result_type,
+                                  levels=c("HoMM", "Nonhomoiconic"),
+                                  labels=c("HoMM",
+                                           "Non-homoiconic MM"))),
+       aes(x = experiment_phase,
+           y = expected_reward,
+           color = result_type)) +
+  geom_hline(yintercept=1, linetype=2, alpha=0.5) +
+  geom_hline(yintercept=0., linetype=3, alpha=0.5) +
+  geom_line(aes(group=as.factor(subject_id)),
+            stat="identity",
+            alpha=0.5) +
+  geom_line(aes(group=result_type),
+            stat="summary",
+            fun.y="mean",
+            size=3) +
+  scale_color_manual(values=c("#e41a1c", "#000000")) +
+  labs(x="Experiment phase", y="Normalized expected earnings") +
+  annotate("text", x=0.6, y=0.05, alpha=0.5, label="Chance") +
+  annotate("text", x=0.6, y=0.95, alpha=0.5, label="Optimal") +
+  scale_y_continuous(limits=c(-0.2, 1.02), breaks=c(0., 0.5, 1.)) +
+  guides(color=guide_legend(title=NULL))  +
+  theme(legend.position=c(0.8, 0.35))
+
+ggsave("../../dissertation/3-human-adaptation/figures/cards_nonhomoiconic_lesion.png", width=6, height=4)
+ggsave("../../../networks/metamapping_paper/figures/cards_nonhomoiconic_lesion.png", width=4, height=3)
+```
+
+
+```{r}
+t.test(expected_reward ~ result_type, homm_nonhomoiconic_lesion_data %>%
+         filter(experiment_phase == "Losing"), paired=T)
+```
+
+```{r}
+set.seed(0)  # reproducibility
+homm_nonhomoiconic_lesion_data %>%
+  filter(experiment_phase == "Losing") %>%
+  group_by(result_type) %>%
+  do(results=mean_cl_boot(.$expected_reward, na.rm=T)) %>%
+  mutate(mean_expected_reward=results$y,
+         CIlow=results$ymin,
+         CIhigh=results$ymax)
+
+perm_mean_diff_test(homm_nonhomoiconic_lesion_data %>% 
+                      filter(result_type == "HoMM",
+                             experiment_phase == "Losing") %>% 
+                      pull(expected_reward),
+                    homm_nonhomoiconic_lesion_data %>% 
+                      filter(result_type == "Nonhomoiconic",
                              experiment_phase == "Losing") %>% 
                       pull(expected_reward))
 ```
