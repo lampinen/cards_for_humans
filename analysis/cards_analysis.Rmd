@@ -476,7 +476,7 @@ ggplot(homm_and_human_data %>%
             size=1.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#e41a1c", "#01665e", "#477ec8")) +
+  scale_color_manual(values=c("#e41a1c", "#015049", "#477ec8")) +
   scale_linetype_manual(values=c("solid", "41", "3111")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
@@ -510,7 +510,7 @@ ggplot(homm_and_human_data %>%
             size=1.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#e41a1c", "#01665e")) +
+  scale_color_manual(values=c("#e41a1c", "#015049")) +
   scale_linetype_manual(values=c("solid", "41")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
