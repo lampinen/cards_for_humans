@@ -795,8 +795,8 @@ perm_mean_diff_test(homm_metaclass_lesion_data %>%
 ggplot(homm_nonhomoiconic_lesion_data %>%
          mutate(result_type = factor(result_type,
                                   levels=c("HoMM", "Nonhomoiconic"),
-                                  labels=c("Homoiconic MM",
-                                           "Non-homoiconic MM"))),
+                                  labels=c("Homoiconic",
+                                           "Non-homoiconic"))),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type)) +
