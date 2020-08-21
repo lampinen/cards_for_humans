@@ -250,7 +250,7 @@ for (phase in c("testing_basic", "testing_losing")) {
     geom_vline(xintercept=0., color="#e41a1c", linetype=2, size=1.5) +
     labs(x="Expected return", y="Probability of a non-zero bet")
   
-  ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_subject_response_fits.png", phase), width=4, height=3)
+  #ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_subject_response_fits.png", phase), width=4, height=3)
   
   ggplot(cards_data %>%
          filter(experiment_phase == phase),
@@ -260,7 +260,7 @@ for (phase in c("testing_basic", "testing_losing")) {
     guides(color=guide_legend(title="Bet")) +
     labs(x="Expected value of hand", y="Density of responses")
   
-  ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_bet_densities.png", phase), width=4, height=3)
+  #ggsave(sprintf("../../dissertation/3-human-adaptation/figures/%s_bet_densities.png", phase), width=4, height=3)
 }
 ```
 
@@ -349,7 +349,7 @@ ggplot(data.frame(result_type = factor(c(0, 0, 1, 1, 2, 2), labels=c("Perfect\na
   coord_cartesian(ylim=c(-0.1, 1.05)) +
   guides(color=guide_legend(title=""))
 
-ggsave("../../../assorted_talks/HoMM/figures/cards_patterns_interpretation.png", width=6, height=4)
+#ggsave("../../../assorted_talks/HoMM/figures/cards_patterns_interpretation.png", width=6, height=4)
 ```
 
 ```{r}
@@ -377,7 +377,7 @@ ggplot(homm_and_human_data %>%
   scale_y_continuous(limits=c(-0.2, 1.02), breaks=c(0., 0.5, 1.)) +
   guides(color=F)  
 
-ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation.png", width=6, height=4)
 ```
 
 ```{r}
@@ -404,7 +404,7 @@ ggplot(homm_and_human_data,
   guides(color=guide_legend(title=""))  +
   theme(legend.position=c(0.9, 0.4))
 
-ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation_vs_HoMM.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/human_adaptation_vs_HoMM.png", width=6, height=4)
 ```
 
 ```{r}
@@ -429,7 +429,7 @@ ggplot(homm_and_human_data %>%
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
   guides(color=guide_legend(title=""))
 
-ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_langauge.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_langauge.png", width=6, height=4)
 ```
 
 ```{r}
@@ -454,12 +454,14 @@ ggplot(homm_and_human_data %>%
   annotate("text", x=0.57, y=0.97, alpha=0.5, label="Optimal")+
   guides(color=guide_legend(title=""))
 
-ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/adaptation_HoMM_only.png", width=6, height=4)
 ```
 ### MM paper plot and analysis
 ```{r}
 ggplot(homm_and_human_data %>%
-         mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)"))),
+         mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)")),
+                result_type = factor(result_type, levels=c("HoMM", "Human", "Language"),
+                                  labels=c("Meta-\nmapping", "Human", "Language\nbaseline"))),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type,
@@ -468,7 +470,7 @@ ggplot(homm_and_human_data %>%
   geom_hline(yintercept=1, linetype=2, alpha=0.5) +
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=as.factor(subject_id)),
-            alpha=0.2,
+            alpha=0.3,
             show.legend=F) +
   geom_line(aes(group=result_type),
             stat="summary",
@@ -476,7 +478,8 @@ ggplot(homm_and_human_data %>%
             size=1.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#e41a1c", "#015049", "#477ec8")) +
+  #scale_color_manual(values=c("#e41a1c", "#015049", "#477ec8")) +
+  scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
   scale_linetype_manual(values=c("solid", "41", "3111")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
@@ -485,7 +488,7 @@ ggplot(homm_and_human_data %>%
   annotate("text", x=2.245, y=1.05, alpha=0.5, label="Optimal") +
   guides(color=guide_legend(title=NULL, label.position = "bottom", keywidth=unit(2, "lines"), keyheight=unit(0.5, "lines"), label.vjust=2),
          linetype=guide_legend(title=NULL)) +
-  theme(legend.position=c(0.92, 0.62))
+  theme(legend.position=c(0.92, 0.59))
 
 ggsave("../../../networks/metamapping_paper/figures/cards_results.png", width=4, height=3)
 ```
@@ -493,7 +496,9 @@ ggsave("../../../networks/metamapping_paper/figures/cards_results.png", width=4,
 ```{r}
 ggplot(homm_and_human_data %>%
          filter(result_type != "Language") %>%
-         mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)"))),
+         mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)")),
+                result_type = factor(result_type, levels=c("HoMM", "Human", "Language"),
+                                  labels=c("Meta-\nmapping", "Human", "Language\nbaseline"))),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type,
@@ -502,7 +507,7 @@ ggplot(homm_and_human_data %>%
   geom_hline(yintercept=1, linetype=2, alpha=0.5) +
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=as.factor(subject_id)),
-            alpha=0.2,
+            alpha=0.3,
             show.legend=F) +
   geom_line(aes(group=result_type),
             stat="summary",
@@ -510,16 +515,17 @@ ggplot(homm_and_human_data %>%
             size=1.5) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#e41a1c", "#015049")) +
+  #scale_color_manual(values=c("#e41a1c", "#015049")) +
+  scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
   scale_linetype_manual(values=c("solid", "41")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
   annotate("text", x=2.258, y=0.05, alpha=0.5, label="Chance") +
   annotate("text", x=2.245, y=1.05, alpha=0.5, label="Optimal") +
-  guides(color=guide_legend(title=NULL, label.position = "bottom", keywidth=unit(2, "lines"), keyheight=unit(0.5, "lines"), label.vjust=2),
+  guides(color=guide_legend(title=NULL, label.position = "bottom", keywidth=unit(2, "lines"), keyheight=unit(0.2, "lines"), label.vjust=2),
          linetype=guide_legend(title=NULL)) +
-  theme(legend.position=c(0.94, 0.66))
+  theme(legend.position=c(0.94, 0.67))
 
 ggsave("../../../networks/metamapping_paper/figures/cards_results_no_lang.png", width=4, height=3)
 ```
@@ -625,7 +631,7 @@ ggplot(change_data,
   scale_y_continuous(breaks = c(-1, 0, 1), labels = c("-100%", "0%", "100%")) +
   guides(color=F)
 
-ggsave("../../dissertation/3-human-adaptation/figures/change_scores.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/change_scores.png", width=6, height=4)
 ```
 
 
@@ -699,7 +705,7 @@ ggplot(homm_lang_baseline_data,
             size=3) +
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
-  scale_color_manual(values=c("#477ec8", "#08519c"),
+  scale_color_manual(values=c("#02205b", "#477ec8"),
                      labels=c("Language\n(HyperNetwork)",
                               "Language\n(Task-concatenated)")) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
@@ -709,7 +715,7 @@ ggplot(homm_lang_baseline_data,
   guides(color=guide_legend(title=NULL))  +
   theme(legend.position=c(0.8, 0.75))
 
-ggsave("../../dissertation/3-human-adaptation/figures/cards_lang_hyper_vs_tcnh.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/cards_lang_hyper_vs_tcnh.png", width=6, height=4)
 ggsave("../../../networks/metamapping_paper/figures/cards_lang_hyper_vs_tcnh.png", width=4, height=3)
 ```
 ```{r}
@@ -731,8 +737,8 @@ homm_lang_baseline_data %>%
 ggplot(homm_metaclass_lesion_data %>%
          mutate(result_type = factor(result_type,
                                   levels=c("HoMM", "Meta-class lesion"),
-                                  labels=c("HoMM",
-                                           "HoMM with no\nmeta-classification"))),
+                                  labels=c("With\nmeta-classification",
+                                           "Without\nmeta-classification"))),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type)) +
@@ -751,9 +757,10 @@ ggplot(homm_metaclass_lesion_data %>%
   annotate("text", x=0.6, y=0.95, alpha=0.5, label="Optimal") +
   scale_y_continuous(limits=c(-0.2, 1.02), breaks=c(0., 0.5, 1.)) +
   guides(color=guide_legend(title=NULL))  +
-  theme(legend.position=c(0.8, 0.35))
+  theme(legend.position=c(0.75, 0.4),
+        legend.key.height=unit(1.5, "lines"))
 
-ggsave("../../dissertation/3-human-adaptation/figures/cards_metaclass_lesion.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/cards_metaclass_lesion.png", width=6, height=4)
 ggsave("../../../networks/metamapping_paper/figures/cards_metaclass_lesion.png", width=4, height=3)
 ```
 
@@ -788,7 +795,7 @@ perm_mean_diff_test(homm_metaclass_lesion_data %>%
 ggplot(homm_nonhomoiconic_lesion_data %>%
          mutate(result_type = factor(result_type,
                                   levels=c("HoMM", "Nonhomoiconic"),
-                                  labels=c("HoMM",
+                                  labels=c("Homoiconic MM",
                                            "Non-homoiconic MM"))),
        aes(x = experiment_phase,
            y = expected_reward,
@@ -810,7 +817,7 @@ ggplot(homm_nonhomoiconic_lesion_data %>%
   guides(color=guide_legend(title=NULL))  +
   theme(legend.position=c(0.8, 0.35))
 
-ggsave("../../dissertation/3-human-adaptation/figures/cards_nonhomoiconic_lesion.png", width=6, height=4)
+#ggsave("../../dissertation/3-human-adaptation/figures/cards_nonhomoiconic_lesion.png", width=6, height=4)
 ggsave("../../../networks/metamapping_paper/figures/cards_nonhomoiconic_lesion.png", width=4, height=3)
 ```
 
