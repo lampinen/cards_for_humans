@@ -45,6 +45,12 @@ for (i in 1:length(data_files)) {
 }
 cards_data = bind_rows(cards_data)
 ```
+How many subjects passed the attention check?
+```{r}
+unique(cards_data$subject_id) %>%
+  length()
+```
+
 
 # basic data processing
 
