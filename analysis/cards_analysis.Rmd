@@ -45,11 +45,6 @@ for (i in 1:length(data_files)) {
 }
 cards_data = bind_rows(cards_data)
 ```
-How many subjects passed the attention check?
-```{r}
-unique(cards_data$subject_id) %>%
-  length()
-```
 
 
 # basic data processing
@@ -66,6 +61,14 @@ cards_data = cards_data %>%
   subject_id = as.factor(subject_id))
 ```
 
+How many subjects passed the attention check?
+```{r}
+cards_data %>% 
+  filter(attention_check_correct) %>%
+  pull(subject_id) %>%
+  unique() %>%
+  length()
+```
 
 # Simple plots
 
@@ -467,7 +470,7 @@ ggplot(homm_and_human_data %>%
 ggplot(homm_and_human_data %>%
          mutate(experiment_phase = factor(experiment_phase, labels=c("Winning\n(trained)", "Losing\n(zero-shot adaptation)")),
                 result_type = factor(result_type, levels=c("HoMM", "Human", "Language"),
-                                  labels=c("Meta-\nmapping", "Human", "Language\nbaseline"))),
+                                  labels=c("Meta-\nmapping", "Human", "Language\nalone"))),
        aes(x = experiment_phase,
            y = expected_reward,
            color = result_type,
@@ -476,7 +479,7 @@ ggplot(homm_and_human_data %>%
   geom_hline(yintercept=1, linetype=2, alpha=0.5) +
   geom_hline(yintercept=0., linetype=3, alpha=0.5) +
   geom_line(aes(group=as.factor(subject_id)),
-            alpha=0.3,
+            alpha=0.4,
             show.legend=F) +
   geom_line(aes(group=result_type),
             stat="summary",
@@ -485,8 +488,11 @@ ggplot(homm_and_human_data %>%
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
   #scale_color_manual(values=c("#e41a1c", "#015049", "#477ec8")) +
-  scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
-  scale_linetype_manual(values=c("solid", "41", "3111")) +
+  #scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
+#  scale_color_manual(values=c("#9e0142", "#01665e", "#5aae61")) +
+#  scale_color_manual(values=c("#f55784", "#441777", "#258545")) +
+  scale_color_manual(values=c("#f55784", "#441777", "#158035")) +
+  scale_linetype_manual(values=c("solid", "41", "11")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
   labs(x="Experiment phase", y="Normalized expected earnings") +
@@ -494,7 +500,8 @@ ggplot(homm_and_human_data %>%
   annotate("text", x=2.245, y=1.05, alpha=0.5, label="Optimal") +
   guides(color=guide_legend(title=NULL, label.position = "bottom", keywidth=unit(2, "lines"), keyheight=unit(0.5, "lines"), label.vjust=2),
          linetype=guide_legend(title=NULL)) +
-  theme(legend.position=c(0.92, 0.59))
+  theme(legend.position=c(0.92, 0.59),
+        legend.margin = margin(0, 0, 0, 0))
 
 ggsave("../../../networks/metamapping_paper/figures/cards_results.pdf", width=4, height=3)
 ```
@@ -522,7 +529,10 @@ ggplot(homm_and_human_data %>%
 #  geom_hline(yintercept=-1, linetype=2, alpha=0.5) +
 #  scale_color_brewer(palette="Set1") +
   #scale_color_manual(values=c("#e41a1c", "#015049")) +
-  scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
+  #scale_color_manual(values=c("#e41a1c", "#f6aa4c", "#02205b")) +
+  #scale_color_manual(values=c("#9e0142", "#01665e", "#5aae61")) +
+  #scale_color_manual(values=c("#f55784", "#441777", "#258545")) +
+  scale_color_manual(values=c("#f55784", "#441777", "#158035")) +
   scale_linetype_manual(values=c("solid", "41")) +
   scale_y_continuous(breaks=c(0., 0.5, 1.), labels=c("0%", "50%", "100%")) +
   scale_x_discrete(expand=c(0.2, 0.2)) +
