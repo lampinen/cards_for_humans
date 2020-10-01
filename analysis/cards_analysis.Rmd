@@ -17,7 +17,7 @@ theme_set(theme_classic())
 # load data
 
 ```{r data_loading}
-data_dir = "../raw_data/ex0_1/"
+data_dir = "../anonymized_data/"
 data_files = list.files(data_dir)
 
 cards_data = replicate(length(data_files), data.frame())
