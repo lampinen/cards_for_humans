@@ -1,3 +1,3 @@
 # cards experiments
 
-A human-subjects version of the zero-shot card game adaptation tasks from my Homoiconic Meta-Mapping (HoMM) paper: <https://arxiv.org/abs/1905.09950>
+A card game adaptation experiment for human participants, for my paper "Transforming task representations to perform novel tasks" (<https://arxiv.org/abs/2005.04318>).
